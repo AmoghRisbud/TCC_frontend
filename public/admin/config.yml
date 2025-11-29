@@ -142,7 +142,7 @@ collections:
       - { name: title, label: Title/Role, widget: string, required: false }
       - { name: bio, label: Bio, widget: markdown, required: false, hint: "Short biography with formatting support" }
       - { name: photo, label: Photo, widget: image, required: false }
-      - { name: email, label: Email, widget: string, required: false, pattern: ['^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', "Must be a valid email address"] }
+      - { name: email, label: Email, widget: string, required: false, hint: "Contact email address" }
       - { name: linkedin, label: LinkedIn URL, widget: string, required: false }
       - { name: order, label: Display Order, widget: number, required: false, value_type: "int", min: 0, hint: "Lower numbers appear first" }
       - { name: category, label: Category, widget: select, required: false, options: ["Leadership", "Educator", "Advisor", "Volunteer"] }

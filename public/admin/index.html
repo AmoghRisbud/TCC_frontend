@@ -85,17 +85,25 @@
   <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
   <script>
-    // Hide loading screen once CMS is loaded
-    if (typeof CMS !== 'undefined') {
-      document.getElementById('loading-screen').style.display = 'none';
-    }
+    // Hide loading screen once CMS is initialized
+    // Use DOMContentLoaded and a short delay to ensure CMS has time to initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      // Give CMS time to initialize and render
+      setTimeout(function() {
+        var loadingScreen = document.getElementById('loading-screen');
+        if (loadingScreen && typeof CMS !== 'undefined') {
+          loadingScreen.style.display = 'none';
+        }
+      }, 500);
+    });
 
-    // Redirect to home after login via Netlify Identity
+    // Handle Netlify Identity login redirect
     if (window.netlifyIdentity) {
       window.netlifyIdentity.on('init', function(user) {
         if (!user) {
           window.netlifyIdentity.on('login', function() {
-            document.location.href = '/admin/';
+            // Reload the page to initialize CMS with authenticated user
+            document.location.reload();
           });
         }
       });
