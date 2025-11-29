@@ -4,7 +4,11 @@ import { getPrograms, getTestimonials } from '../lib/content';
 
 export default function HomePage() {
   const programs = getPrograms().slice(0, 2);
-  const testimonials = getTestimonials().slice(0, 3);
+  const allTestimonials = getTestimonials();
+  const featuredTestimonials = allTestimonials.filter(t => t.featured);
+  const testimonials = featuredTestimonials.length > 0 
+    ? featuredTestimonials.slice(0, 3) 
+    : allTestimonials.slice(0, 3);
   
   return (
     <div>
