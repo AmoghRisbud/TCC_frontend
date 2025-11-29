@@ -84,13 +84,17 @@ export default function AdminPage() {
           />
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {adminFeatures.map((feature) => (
-              <div key={feature.title} className="card text-center group hover:shadow-lg transition-shadow duration-300">
+              <article 
+                key={feature.title} 
+                className="card text-center group hover:shadow-lg transition-shadow duration-300"
+                aria-label={`${feature.title} - ${feature.description}`}
+              >
                 <div className="w-16 h-16 mx-auto mb-6 bg-brand-primary/10 rounded-2xl flex items-center justify-center text-brand-primary group-hover:bg-brand-primary group-hover:text-white transition-colors duration-300">
                   {feature.icon}
                 </div>
                 <h3 className="h3 mb-4 text-brand-dark">{feature.title}</h3>
                 <p className="text-brand-muted leading-relaxed">{feature.description}</p>
-              </div>
+              </article>
             ))}
           </div>
         </div>
@@ -107,8 +111,9 @@ export default function AdminPage() {
             </div>
             <h2 className="h2 mb-6 text-brand-dark">Getting Started</h2>
             <p className="text-xl text-brand-muted mb-8">
-              This admin section provides an overview of available management features. 
-              Full functionality will be enabled based on your access permissions and role assignments.
+              This admin section displays the content management capabilities that will be available on this platform. 
+              These features are currently in preview mode. To enable full admin functionality, 
+              contact us to request appropriate access permissions for your role.
             </p>
             <Link href="/contact" className="btn">
               <span className="flex items-center gap-2">
