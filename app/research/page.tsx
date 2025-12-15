@@ -25,11 +25,14 @@ export default function researchPage() {
         <div className="container">
           <div className="grid md:grid-cols-2 gap-8">
             {research.map(p => (
-              <Link 
-                key={p.slug} 
-                href={`/research/${p.slug}`}
+              <Link
+                key={p.slug}
+                href={p.pdf}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="card-interactive group"
               >
+
                 <div className="flex flex-col h-full">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 bg-brand-secondary/10 rounded-xl flex items-center justify-center">
@@ -56,7 +59,7 @@ export default function researchPage() {
                   )}
                   
                   <span className="inline-flex items-center gap-2 text-brand-primary font-medium group-hover:gap-3 transition-all">
-                    View Project Details
+                    View Research Article
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
