@@ -26,9 +26,9 @@ func Logging(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		wrapped := newResponseWriter(w)
-		
+
 		next.ServeHTTP(wrapped, r)
-		
+
 		log.Printf(
 			"%s %s %d %s",
 			r.Method,

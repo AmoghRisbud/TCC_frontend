@@ -52,13 +52,13 @@ type QuizAttempt struct {
 
 // QuizAnswer represents a student's answer to a question
 type QuizAnswer struct {
-	ID               int      `json:"id"`
-	AttemptID        int      `json:"attempt_id"`
-	QuestionID       int      `json:"question_id"`
-	SelectedOptionID *int     `json:"selected_option_id,omitempty"`
-	AnswerText       *string  `json:"answer_text,omitempty"`
-	IsCorrect        *bool    `json:"is_correct,omitempty"`
-	PointsEarned     float64  `json:"points_earned"`
+	ID               int     `json:"id"`
+	AttemptID        int     `json:"attempt_id"`
+	QuestionID       int     `json:"question_id"`
+	SelectedOptionID *int    `json:"selected_option_id,omitempty"`
+	AnswerText       *string `json:"answer_text,omitempty"`
+	IsCorrect        *bool   `json:"is_correct,omitempty"`
+	PointsEarned     float64 `json:"points_earned"`
 }
 
 // QuizStore provides database operations for quizzes
@@ -193,7 +193,7 @@ func (s *QuizStore) GetOptions(questionID int, includeCorrect bool) ([]*QuizQues
 			FROM quiz_question_options WHERE question_id = $1 ORDER BY order_index
 		`
 	}
-	
+
 	rows, err := s.db.Query(query, questionID)
 	if err != nil {
 		return nil, err
@@ -226,7 +226,7 @@ func (s *QuizStore) StartAttempt(attempt *QuizAttempt) error {
 	if err := s.db.QueryRow(countQuery, attempt.UserID, attempt.QuizID).Scan(&attemptCount); err != nil {
 		return err
 	}
-	
+
 	attempt.AttemptNumber = attemptCount + 1
 
 	query := `
@@ -265,7 +265,7 @@ func (s *QuizStore) CompleteAttempt(attemptID int) error {
 	// Calculate total score
 	var totalScore float64
 	var totalPossible float64
-	
+
 	scoreQuery := `
 		SELECT COALESCE(SUM(qa.points_earned), 0) as earned, 
 		       COALESCE(SUM(qq.points), 0) as possible
@@ -278,7 +278,7 @@ func (s *QuizStore) CompleteAttempt(attemptID int) error {
 	}
 
 	percentage := (totalScore / totalPossible) * 100
-	
+
 	// Get passing score
 	var passingScore int
 	passingQuery := `

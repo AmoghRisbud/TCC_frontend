@@ -62,7 +62,7 @@ func main() {
 	// Protected routes - require authentication
 	protectedMux := http.NewServeMux()
 	protectedMux.HandleFunc("/api/auth/me", authHandler.Me)
-	
+
 	// Course management routes
 	protectedMux.HandleFunc("/api/courses/create", courseHandler.CreateCourse)
 	protectedMux.HandleFunc("/api/courses/", func(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +71,7 @@ func main() {
 			enrollmentHandler.ListCourseEnrollments(w, r)
 			return
 		}
-		
+
 		switch r.Method {
 		case http.MethodGet:
 			courseHandler.GetCourse(w, r)
@@ -114,7 +114,7 @@ func main() {
 			}
 			return
 		}
-		
+
 		if r.Method == http.MethodGet {
 			quizHandler.GetQuiz(w, r)
 		} else {
@@ -124,7 +124,7 @@ func main() {
 
 	// Apply middleware to protected routes
 	authMiddleware := middleware.AuthMiddleware(authService)
-	
+
 	// Combine public and protected routes
 	finalMux := http.NewServeMux()
 	finalMux.Handle("/api/auth/register", mux)

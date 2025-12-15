@@ -19,9 +19,9 @@ type Enrollment struct {
 // EnrollmentWithDetails includes user and course information
 type EnrollmentWithDetails struct {
 	Enrollment
-	CourseName  string  `json:"course_name"`
-	CourseSlug  string  `json:"course_slug"`
-	StudentName string  `json:"student_name"`
+	CourseName   string `json:"course_name"`
+	CourseSlug   string `json:"course_slug"`
+	StudentName  string `json:"student_name"`
 	StudentEmail string `json:"student_email"`
 }
 

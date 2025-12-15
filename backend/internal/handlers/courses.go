@@ -28,12 +28,12 @@ func (h *CourseHandler) ListCourses(w http.ResponseWriter, r *http.Request) {
 	category := r.URL.Query().Get("category")
 	level := r.URL.Query().Get("level")
 	instructorIDStr := r.URL.Query().Get("instructor_id")
-	
+
 	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
 	if limit <= 0 || limit > 100 {
 		limit = 20
 	}
-	
+
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 	if offset < 0 {
 		offset = 0
@@ -65,12 +65,12 @@ func (h *CourseHandler) GetCourse(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid course ID", http.StatusBadRequest)
 		return
 	}
-	
+
 	idOrSlug := pathParts[len(pathParts)-1]
-	
+
 	var course *models.Course
 	var err error
-	
+
 	// Try to parse as ID first
 	if id, parseErr := strconv.Atoi(idOrSlug); parseErr == nil {
 		course, err = h.courseStore.GetByID(id)
@@ -78,7 +78,7 @@ func (h *CourseHandler) GetCourse(w http.ResponseWriter, r *http.Request) {
 		// Otherwise treat as slug
 		course, err = h.courseStore.GetBySlug(idOrSlug)
 	}
-	
+
 	if err != nil {
 		http.Error(w, "Course not found", http.StatusNotFound)
 		return
@@ -137,7 +137,7 @@ func (h *CourseHandler) UpdateCourse(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid course ID", http.StatusBadRequest)
 		return
 	}
-	
+
 	id, err := strconv.Atoi(pathParts[len(pathParts)-1])
 	if err != nil {
 		http.Error(w, "Invalid course ID", http.StatusBadRequest)
@@ -181,7 +181,7 @@ func (h *CourseHandler) DeleteCourse(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid course ID", http.StatusBadRequest)
 		return
 	}
-	
+
 	id, err := strconv.Atoi(pathParts[len(pathParts)-1])
 	if err != nil {
 		http.Error(w, "Invalid course ID", http.StatusBadRequest)
