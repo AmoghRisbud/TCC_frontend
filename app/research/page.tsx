@@ -4,8 +4,8 @@ import { getResearch } from '../../lib/content';
 
 export const metadata = { title: 'Research | TCC' };
 
-export default function researchPage() {
-  const research = getResearch();
+export default async function researchPage() {
+  const research = await getResearch();
   return (
     <div>
       {/* Hero Section */}
@@ -27,9 +27,8 @@ export default function researchPage() {
             {research.map(p => (
               <Link
                 key={p.slug}
-                href={p.pdf}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={p.pdf || `/research/${p.slug}`}
+                {...(p.pdf && { target: "_blank", rel: "noopener noreferrer" })}
                 className="card-interactive group"
               >
 
