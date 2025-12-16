@@ -4,8 +4,8 @@ import { Program } from '@/lib/types';
 
 const REDIS_KEY = 'tcc:programs';
 
-// GET all programs
-export async function GET() {
+// GET all programs or a single program by slug
+export async function GET(request: NextRequest) {
   try {
     const connected = await ensureRedisConnection();
     if (!connected) {
@@ -20,6 +20,19 @@ export async function GET() {
     }
 
     const programs: Program[] = JSON.parse(data);
+    
+    // Check if a specific program is requested
+    const { searchParams } = new URL(request.url);
+    const slug = searchParams.get('slug');
+    
+    if (slug) {
+      const program = programs.find(p => p.slug === slug);
+      if (!program) {
+        return NextResponse.json({ error: 'Program not found' }, { status: 404 });
+      }
+      return NextResponse.json(program);
+    }
+    
     return NextResponse.json(programs);
   } catch (error) {
     console.error('Error fetching programs:', error);
@@ -87,7 +100,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Delete a program
+// DELETE - Delete one or multiple programs
 export async function DELETE(request: NextRequest) {
   try {
     const connected = await ensureRedisConnection();
@@ -97,22 +110,35 @@ export async function DELETE(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
+    const slugsParam = searchParams.get('slugs');
     
-    if (!slug) {
-      return NextResponse.json({ error: 'Program slug is required' }, { status: 400 });
+    // Support both single and bulk delete
+    let slugsToDelete: string[] = [];
+    
+    if (slug) {
+      slugsToDelete = [slug];
+    } else if (slugsParam) {
+      slugsToDelete = slugsParam.split(',').map(s => s.trim());
+    } else {
+      return NextResponse.json({ error: 'Program slug or slugs parameter is required' }, { status: 400 });
     }
 
     const redis = getRedisClient();
     const data = await redis.get(REDIS_KEY);
     const programs: Program[] = data ? JSON.parse(data) : [];
     
-    const filteredPrograms = programs.filter(p => p.slug !== slug);
+    const filteredPrograms = programs.filter(p => !slugsToDelete.includes(p.slug));
+    const deletedCount = programs.length - filteredPrograms.length;
 
     await redis.set(REDIS_KEY, JSON.stringify(filteredPrograms));
 
-    return NextResponse.json({ success: true, slug });
+    return NextResponse.json({ 
+      success: true, 
+      deletedCount,
+      deletedSlugs: slugsToDelete.filter(slug => programs.some(p => p.slug === slug))
+    });
   } catch (error) {
-    console.error('Error deleting program:', error);
-    return NextResponse.json({ error: 'Failed to delete program' }, { status: 500 });
+    console.error('Error deleting program(s):', error);
+    return NextResponse.json({ error: 'Failed to delete program(s)' }, { status: 500 });
   }
 }

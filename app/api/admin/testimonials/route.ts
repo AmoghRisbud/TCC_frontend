@@ -4,8 +4,8 @@ import { Testimonial } from '@/lib/types';
 
 const REDIS_KEY = 'tcc:testimonials';
 
-// GET all testimonials
-export async function GET() {
+// GET all testimonials or a single testimonial by id
+export async function GET(request: NextRequest) {
   try {
     const connected = await ensureRedisConnection();
     if (!connected) {
@@ -20,6 +20,19 @@ export async function GET() {
     }
 
     const testimonials: Testimonial[] = JSON.parse(data);
+    
+    // Check if a specific testimonial is requested
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    if (id) {
+      const testimonial = testimonials.find(t => t.id === id);
+      if (!testimonial) {
+        return NextResponse.json({ error: 'Testimonial not found' }, { status: 404 });
+      }
+      return NextResponse.json(testimonial);
+    }
+    
     return NextResponse.json(testimonials);
   } catch (error) {
     console.error('Error fetching testimonials:', error);
@@ -87,7 +100,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Delete a testimonial
+// DELETE - Delete one or multiple testimonials
 export async function DELETE(request: NextRequest) {
   try {
     const connected = await ensureRedisConnection();
@@ -97,22 +110,35 @@ export async function DELETE(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const idsParam = searchParams.get('ids');
     
-    if (!id) {
-      return NextResponse.json({ error: 'Testimonial id is required' }, { status: 400 });
+    // Support both single and bulk delete
+    let idsToDelete: string[] = [];
+    
+    if (id) {
+      idsToDelete = [id];
+    } else if (idsParam) {
+      idsToDelete = idsParam.split(',').map(i => i.trim());
+    } else {
+      return NextResponse.json({ error: 'Testimonial id or ids parameter is required' }, { status: 400 });
     }
 
     const redis = getRedisClient();
     const data = await redis.get(REDIS_KEY);
     const testimonials: Testimonial[] = data ? JSON.parse(data) : [];
     
-    const filteredTestimonials = testimonials.filter(t => t.id !== id);
+    const filteredTestimonials = testimonials.filter(t => !idsToDelete.includes(t.id));
+    const deletedCount = testimonials.length - filteredTestimonials.length;
 
     await redis.set(REDIS_KEY, JSON.stringify(filteredTestimonials));
 
-    return NextResponse.json({ success: true, id });
+    return NextResponse.json({ 
+      success: true, 
+      deletedCount,
+      deletedIds: idsToDelete.filter(id => testimonials.some(t => t.id === id))
+    });
   } catch (error) {
-    console.error('Error deleting testimonial:', error);
-    return NextResponse.json({ error: 'Failed to delete testimonial' }, { status: 500 });
+    console.error('Error deleting testimonial(s):', error);
+    return NextResponse.json({ error: 'Failed to delete testimonial(s)' }, { status: 500 });
   }
 }

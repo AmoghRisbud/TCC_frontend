@@ -69,6 +69,30 @@ redis-cli
 curl http://localhost:3000/api/admin/programs
 ```
 
+### Get a Single Program
+
+```bash
+curl "http://localhost:3000/api/admin/programs?slug=arbitration-law"
+```
+
+### Get a Single Gallery Item
+
+```bash
+curl "http://localhost:3000/api/admin/gallery?id=event2"
+```
+
+### Get a Single Testimonial
+
+```bash
+curl "http://localhost:3000/api/admin/testimonials?id=test1"
+```
+
+### Get a Single Research Article
+
+```bash
+curl "http://localhost:3000/api/admin/research?slug=legal-specs"
+```
+
 ### Add a New Program
 
 ```bash
@@ -131,17 +155,29 @@ curl -X PUT http://localhost:3000/api/admin/research \
 ### Delete Content
 
 ```bash
-# Delete a program
+# Delete a single program
 curl -X DELETE "http://localhost:3000/api/admin/programs?slug=new-program"
 
-# Delete a testimonial
+# Delete multiple programs at once (bulk delete)
+curl -X DELETE "http://localhost:3000/api/admin/programs?slugs=program-1,program-2,program-3"
+
+# Delete a single testimonial
 curl -X DELETE "http://localhost:3000/api/admin/testimonials?id=test1"
 
-# Delete a gallery item
+# Delete multiple testimonials at once (bulk delete)
+curl -X DELETE "http://localhost:3000/api/admin/testimonials?ids=test1,test2,test3"
+
+# Delete a single gallery item
 curl -X DELETE "http://localhost:3000/api/admin/gallery?id=new-event"
 
-# Delete a research article
+# Delete multiple gallery items at once (bulk delete)
+curl -X DELETE "http://localhost:3000/api/admin/gallery?ids=event1,event2,event3"
+
+# Delete a single research article
 curl -X DELETE "http://localhost:3000/api/admin/research?slug=new-research"
+
+# Delete multiple research articles at once (bulk delete)
+curl -X DELETE "http://localhost:3000/api/admin/research?slugs=research-1,research-2"
 ```
 
 ## Viewing Changes

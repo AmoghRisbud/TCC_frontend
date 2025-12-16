@@ -84,33 +84,46 @@ All admin endpoints are located under `/api/admin/`:
 
 #### Programs
 - `GET /api/admin/programs` - Get all programs
+- `GET /api/admin/programs?slug=program-slug` - Get a single program by slug
 - `POST /api/admin/programs` - Create/update all programs (bulk)
 - `PUT /api/admin/programs` - Update a single program
-- `DELETE /api/admin/programs?slug=program-slug` - Delete a program
+- `DELETE /api/admin/programs?slug=program-slug` - Delete a single program
+- `DELETE /api/admin/programs?slugs=slug1,slug2,slug3` - Delete multiple programs (bulk)
 
 #### Testimonials
 - `GET /api/admin/testimonials` - Get all testimonials
+- `GET /api/admin/testimonials?id=testimonial-id` - Get a single testimonial by id
 - `POST /api/admin/testimonials` - Create/update all testimonials (bulk)
 - `PUT /api/admin/testimonials` - Update a single testimonial
-- `DELETE /api/admin/testimonials?id=testimonial-id` - Delete a testimonial
+- `DELETE /api/admin/testimonials?id=testimonial-id` - Delete a single testimonial
+- `DELETE /api/admin/testimonials?ids=id1,id2,id3` - Delete multiple testimonials (bulk)
 
 #### Gallery
 - `GET /api/admin/gallery` - Get all gallery items
+- `GET /api/admin/gallery?id=item-id` - Get a single gallery item by id
 - `POST /api/admin/gallery` - Create/update all gallery items (bulk)
 - `PUT /api/admin/gallery` - Update a single gallery item
-- `DELETE /api/admin/gallery?id=item-id` - Delete a gallery item
+- `DELETE /api/admin/gallery?id=item-id` - Delete a single gallery item
+- `DELETE /api/admin/gallery?ids=id1,id2,id3` - Delete multiple gallery items (bulk)
 
 #### Research
 - `GET /api/admin/research` - Get all research articles
+- `GET /api/admin/research?slug=research-slug` - Get a single research article by slug
 - `POST /api/admin/research` - Create/update all research articles (bulk)
 - `PUT /api/admin/research` - Update a single research article
-- `DELETE /api/admin/research?slug=research-slug` - Delete a research article
+- `DELETE /api/admin/research?slug=research-slug` - Delete a single research article
+- `DELETE /api/admin/research?slugs=slug1,slug2,slug3` - Delete multiple research articles (bulk)
 
 ### Example API Usage
 
 #### Get all programs
 ```bash
 curl http://localhost:3000/api/admin/programs
+```
+
+#### Get a single gallery item
+```bash
+curl "http://localhost:3000/api/admin/gallery?id=event2"
 ```
 
 #### Update a program
@@ -125,9 +138,14 @@ curl -X PUT http://localhost:3000/api/admin/programs \
   }'
 ```
 
-#### Delete a testimonial
+#### Delete a single testimonial
 ```bash
 curl -X DELETE "http://localhost:3000/api/admin/testimonials?id=test1"
+```
+
+#### Delete multiple programs (bulk delete)
+```bash
+curl -X DELETE "http://localhost:3000/api/admin/programs?slugs=program-1,program-2,program-3"
 ```
 
 ## How It Works

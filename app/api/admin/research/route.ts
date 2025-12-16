@@ -4,8 +4,8 @@ import { Research } from '@/lib/types';
 
 const REDIS_KEY = 'tcc:research';
 
-// GET all research articles
-export async function GET() {
+// GET all research articles or a single article by slug
+export async function GET(request: NextRequest) {
   try {
     const connected = await ensureRedisConnection();
     if (!connected) {
@@ -20,6 +20,19 @@ export async function GET() {
     }
 
     const research: Research[] = JSON.parse(data);
+    
+    // Check if a specific article is requested
+    const { searchParams } = new URL(request.url);
+    const slug = searchParams.get('slug');
+    
+    if (slug) {
+      const article = research.find(r => r.slug === slug);
+      if (!article) {
+        return NextResponse.json({ error: 'Research article not found' }, { status: 404 });
+      }
+      return NextResponse.json(article);
+    }
+    
     return NextResponse.json(research);
   } catch (error) {
     console.error('Error fetching research articles:', error);
@@ -87,7 +100,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Delete a research article
+// DELETE - Delete one or multiple research articles
 export async function DELETE(request: NextRequest) {
   try {
     const connected = await ensureRedisConnection();
@@ -97,22 +110,35 @@ export async function DELETE(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const slug = searchParams.get('slug');
+    const slugsParam = searchParams.get('slugs');
     
-    if (!slug) {
-      return NextResponse.json({ error: 'Research article slug is required' }, { status: 400 });
+    // Support both single and bulk delete
+    let slugsToDelete: string[] = [];
+    
+    if (slug) {
+      slugsToDelete = [slug];
+    } else if (slugsParam) {
+      slugsToDelete = slugsParam.split(',').map(s => s.trim());
+    } else {
+      return NextResponse.json({ error: 'Research article slug or slugs parameter is required' }, { status: 400 });
     }
 
     const redis = getRedisClient();
     const data = await redis.get(REDIS_KEY);
     const research: Research[] = data ? JSON.parse(data) : [];
     
-    const filteredResearch = research.filter(r => r.slug !== slug);
+    const filteredResearch = research.filter(r => !slugsToDelete.includes(r.slug));
+    const deletedCount = research.length - filteredResearch.length;
 
     await redis.set(REDIS_KEY, JSON.stringify(filteredResearch));
 
-    return NextResponse.json({ success: true, slug });
+    return NextResponse.json({ 
+      success: true, 
+      deletedCount,
+      deletedSlugs: slugsToDelete.filter(slug => research.some(r => r.slug === slug))
+    });
   } catch (error) {
-    console.error('Error deleting research article:', error);
-    return NextResponse.json({ error: 'Failed to delete research article' }, { status: 500 });
+    console.error('Error deleting research article(s):', error);
+    return NextResponse.json({ error: 'Failed to delete research article(s)' }, { status: 500 });
   }
 }

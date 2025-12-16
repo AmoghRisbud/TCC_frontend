@@ -4,8 +4,8 @@ import { GalleryItem } from '@/lib/types';
 
 const REDIS_KEY = 'tcc:gallery';
 
-// GET all gallery items
-export async function GET() {
+// GET all gallery items or a single item by id
+export async function GET(request: NextRequest) {
   try {
     const connected = await ensureRedisConnection();
     if (!connected) {
@@ -20,6 +20,19 @@ export async function GET() {
     }
 
     const gallery: GalleryItem[] = JSON.parse(data);
+    
+    // Check if a specific item is requested
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    
+    if (id) {
+      const item = gallery.find(g => g.id === id);
+      if (!item) {
+        return NextResponse.json({ error: 'Gallery item not found' }, { status: 404 });
+      }
+      return NextResponse.json(item);
+    }
+    
     return NextResponse.json(gallery);
   } catch (error) {
     console.error('Error fetching gallery items:', error);
@@ -87,7 +100,7 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// DELETE - Delete a gallery item
+// DELETE - Delete one or multiple gallery items
 export async function DELETE(request: NextRequest) {
   try {
     const connected = await ensureRedisConnection();
@@ -97,22 +110,35 @@ export async function DELETE(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
+    const idsParam = searchParams.get('ids');
     
-    if (!id) {
-      return NextResponse.json({ error: 'Gallery item id is required' }, { status: 400 });
+    // Support both single and bulk delete
+    let idsToDelete: string[] = [];
+    
+    if (id) {
+      idsToDelete = [id];
+    } else if (idsParam) {
+      idsToDelete = idsParam.split(',').map(i => i.trim());
+    } else {
+      return NextResponse.json({ error: 'Gallery item id or ids parameter is required' }, { status: 400 });
     }
 
     const redis = getRedisClient();
     const data = await redis.get(REDIS_KEY);
     const gallery: GalleryItem[] = data ? JSON.parse(data) : [];
     
-    const filteredGallery = gallery.filter(g => g.id !== id);
+    const filteredGallery = gallery.filter(g => !idsToDelete.includes(g.id));
+    const deletedCount = gallery.length - filteredGallery.length;
 
     await redis.set(REDIS_KEY, JSON.stringify(filteredGallery));
 
-    return NextResponse.json({ success: true, id });
+    return NextResponse.json({ 
+      success: true, 
+      deletedCount,
+      deletedIds: idsToDelete.filter(id => gallery.some(g => g.id === id))
+    });
   } catch (error) {
-    console.error('Error deleting gallery item:', error);
-    return NextResponse.json({ error: 'Failed to delete gallery item' }, { status: 500 });
+    console.error('Error deleting gallery item(s):', error);
+    return NextResponse.json({ error: 'Failed to delete gallery item(s)' }, { status: 500 });
   }
 }
