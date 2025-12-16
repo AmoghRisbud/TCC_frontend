@@ -113,7 +113,15 @@ ADMIN_EMAIL_3=third-admin@example.com
 
 Admin users are configured via environment variables. Users whose email addresses match the configured admin emails will have admin privileges.
 
-In your `.env.local` file:
+In your `.env.local` file, you have two options:
+
+**Option 1: Comma-separated list (recommended for many admins)**
+
+```env
+ADMIN_EMAILS=admin1@example.com,admin2@example.com,admin3@example.com,admin4@example.com
+```
+
+**Option 2: Individual variables (backward compatible)**
 
 ```env
 ADMIN_EMAIL_1=your-admin@example.com
@@ -121,7 +129,7 @@ ADMIN_EMAIL_2=another-admin@example.com
 ADMIN_EMAIL_3=third-admin@example.com
 ```
 
-You can add up to 3 admin emails. Leave unused entries empty or remove them.
+**Note**: You can use both options together - all emails will be combined into the admin list.
 
 ## Step 6: Test Authentication
 

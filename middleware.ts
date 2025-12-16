@@ -11,12 +11,16 @@ export default withAuth(
     if (isAdminRoute || isApiAdminRoute) {
       if (!token) {
         // Not authenticated
-        return NextResponse.redirect(new URL('/auth/signin?callbackUrl=' + encodeURIComponent(req.nextUrl.pathname), req.url));
+        const url = new URL('/auth/signin', req.url);
+        url.searchParams.set('callbackUrl', req.nextUrl.pathname);
+        return NextResponse.redirect(url);
       }
       
       if (!token.isAdmin) {
         // Authenticated but not admin
-        return NextResponse.redirect(new URL('/auth/error?error=AccessDenied', req.url));
+        const url = new URL('/auth/error', req.url);
+        url.searchParams.set('error', 'AccessDenied');
+        return NextResponse.redirect(url);
       }
     }
 

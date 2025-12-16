@@ -3,11 +3,16 @@ import GoogleProvider from 'next-auth/providers/google';
 import GitHubProvider from 'next-auth/providers/github';
 
 // Admin email addresses - these users will have admin privileges
-const ADMIN_EMAILS = [
-  process.env.ADMIN_EMAIL_1,
-  process.env.ADMIN_EMAIL_2,
-  process.env.ADMIN_EMAIL_3,
-].filter(Boolean);
+// Supports both comma-separated ADMIN_EMAILS or individual ADMIN_EMAIL_* variables
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
+  .split(',')
+  .map(email => email.trim())
+  .filter(Boolean)
+  .concat([
+    process.env.ADMIN_EMAIL_1,
+    process.env.ADMIN_EMAIL_2,
+    process.env.ADMIN_EMAIL_3,
+  ].filter(Boolean) as string[]);
 
 export const authOptions: NextAuthOptions = {
   providers: [
