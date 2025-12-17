@@ -6,7 +6,7 @@ import SessionProvider from './components/SessionProvider';
 
 export const metadata = {
   title: 'The Collective Counsel',
-  description: 'Helping Law Students Find Clarity, Skills & Direction.'
+  description: 'Helping Law Students Find Clarity, Skills & Direction.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
