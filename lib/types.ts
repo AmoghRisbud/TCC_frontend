@@ -31,6 +31,7 @@ export interface Research {
   slug: string;
   title: string;
   summary: string;
+  image: string;
   year?: string;
   client?: string;
   impactMetrics?: ProjectMetric[];

@@ -1,6 +1,7 @@
 ---
 title: "Third Pillar of Democracy-Inclusivity of Indian Judiciary"
 summary: "Inclusivity of Indian Judiciary"
+image: "/images/research/inlusivity.jpeg"
 year: "2025"
 pdf: "/research/Third Pillar of Democracy.pdf"
 impactMetrics:

@@ -1,6 +1,7 @@
 ---
 title: "Pan-India Single Election and Integrated Election System"
 summary: "Single Election System"
+image: "/images/research/voting.jpeg"
 year: "2025"
 pdf: "/research/Article_1_Legal_Specs_Document.pdf"
 impactMetrics:

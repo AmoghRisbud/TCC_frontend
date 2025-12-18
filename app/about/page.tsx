@@ -99,7 +99,7 @@ const peopleGroups = [
       {
         name: "Shubham vengurlekar",
         designation: "Co-Founder – Tech",
-        image: "/images/counsel/Varsha.JPG",
+        image: "/images/counsel/ShubhamV.JPG",
       },
       {
         name: "Hitansha",
@@ -109,8 +109,8 @@ const peopleGroups = [
       },
       {
         name: "Ms. Gurleen",
-        designation: "",
-        image: "/images/counsel/Adv. Kanchan_User Success Manager.jpg",
+        designation: "Curriculum manager",
+        image: "/images/counsel/Gurleen.JPEG",
       },
       {
         name: "Adv. Kanchan",
@@ -131,7 +131,7 @@ const peopleGroups = [
       {
         name: "Ms. Nishtha Sofat",
         designation: "",
-        image: "/images/counsel/Kaustav Das Sharma (Research Director).jpg",
+        image: "/images/counsel/Nishtha.JPEG",
       },
       {
         name: " Adv. Ankit Kuril",
@@ -141,7 +141,7 @@ const peopleGroups = [
       },
       {
         name: "Ms. Ashritha Allparthi",
-        designation: "",
+        designation: "Learning experience designer",
         image: "/images/counsel/Ashritha.JPEG",
       },
       {
@@ -151,7 +151,7 @@ const peopleGroups = [
       },
       {
         name: "Adv. Dhruv Ashish",
-        designation: "",
+        designation: "Internal management lead",
         image: "/images/counsel/Adv. Dhruv Ashish.jpg",
       },
       {
@@ -196,7 +196,7 @@ const peopleGroups = [
       },
       {
         name: "Adv. Richa Bharadwaj",
-        designation: "",
+        designation: "Legal counsel IP and tech law specialist",
         image: "/images/counsel/Tushar.jpeg",
       },
     ],

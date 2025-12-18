@@ -32,27 +32,16 @@ export default async function researchPage() {
                 className="card-interactive group"
               >
                 <div className="flex flex-col h-full">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-brand-secondary/10 rounded-xl flex items-center justify-center">
-                      <svg
-                        className="w-6 h-6 text-brand-secondary"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                    </div>
-                    {p.year && (
-                      <span className="text-sm text-brand-muted">{p.year}</span>
-                    )}
-                  </div>
+                  {p.image && (
+  <div className="mb-4 overflow-hidden rounded-xl">
+    <img
+      src={p.image}
+      alt={p.title}
+      className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+    />
+  </div>
+)}
+
                   <h3 className="h3 mb-3 text-brand-dark group-hover:text-brand-primary transition-colors">
                     {p.title}
                   </h3>
