@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 const contactMethods = [
@@ -62,6 +63,22 @@ const contactMethods = [
 
 export default function ContactPage() {
   const [showStudentForm, setShowStudentForm] = useState(false);
+  const [showOrgForm, setShowOrgForm] = useState(false);
+  const searchParams = useSearchParams();
+  useEffect(() => {
+  const type = searchParams.get("type");
+
+  if (type === "partner") {
+    setShowOrgForm(true);
+    setShowStudentForm(false);
+  }
+
+  if (type === "student") {
+    setShowStudentForm(true);
+    setShowOrgForm(false);
+  }
+}, [searchParams]);
+
   return (
     <div>
       {/* Hero Section */}
@@ -124,14 +141,15 @@ export default function ContactPage() {
                   🎓 Are you a Student and want to learn?
                 </button>
 
-                <a
-                  href="https://your-organization-link.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-secondary"
-                >
-                  🏢 Are you an Organization and want to partner with us ?
-                </a>
+                <button
+    onClick={() => {
+      setShowOrgForm(true);
+      setShowStudentForm(false);
+    }}
+    className="btn-secondary"
+  >
+    🏢 Are you an Organization and want to partner with us?
+  </button>
               </div>
             </div>
 
@@ -187,6 +205,57 @@ export default function ContactPage() {
                 </form>
               </div>
             )}
+
+            {showOrgForm && (
+  <div className="card max-w-2xl mx-auto animate-fade-in">
+    <h2 className="h3 mb-6 text-center text-brand-dark">
+      Partner With Us
+    </h2>
+
+    <form className="space-y-6">
+      <div>
+        <label className="block text-sm font-medium text-brand-dark mb-2">
+          Organization Name
+        </label>
+        <input className="input" placeholder="Your organization name" />
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-medium text-brand-dark mb-2">
+            Contact Person
+          </label>
+          <input className="input" placeholder="Full name" />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-brand-dark mb-2">
+            Email
+          </label>
+          <input className="input" placeholder="contact@email.com" />
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-brand-dark mb-2">
+          Partnership Details
+        </label>
+        <textarea
+          className="input resize-none"
+          rows={5}
+          placeholder="Tell us how you'd like to collaborate..."
+        />
+      </div>
+
+      <div className="text-center">
+        <button type="submit" className="btn">
+          Submit Partnership Request
+        </button>
+      </div>
+    </form>
+  </div>
+)}
+
           </div>
         </div>
       </section>

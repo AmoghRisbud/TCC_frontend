@@ -219,7 +219,7 @@ export default function CommunityPage() {
                 </a>
 
                 <a
-                  href="https://docs.google.com/forms/d/ZZZZ"
+                  href="/contact?type=partner"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-cta w-full"
