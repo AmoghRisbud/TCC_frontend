@@ -2,6 +2,19 @@
 
 import React from 'react';
 import { Research } from '@/lib/types';
+import ImageUpload from '../components/ImageUpload';
+import PDFUpload from '../components/PDFUpload';
+
+// Helper function to generate URL-friendly slug from title
+const generateSlug = (title: string): string => {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
 
 const emptyResearch: Research = {
   slug: '',
@@ -14,7 +27,6 @@ const emptyResearch: Research = {
   tags: [],
   year: '',
   image: '',
-  driveLink: '',
   pdf: '',
 };
 
@@ -52,8 +64,14 @@ export default function AdminResearchManager() {
     try {
       setLoading(true);
       setError(null);
+      
+      // Auto-generate slug from title if adding new research
+      const dataToSubmit = modalMode === 'add' 
+        ? { ...formData, slug: generateSlug(formData.title) }
+        : formData;
+      
       const method = modalMode === 'add' ? 'POST' : 'PUT';
-      const res = await fetch('/api/admin/research', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+      const res = await fetch('/api/admin/research', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataToSubmit) });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || `Failed to ${modalMode} article`);
       setSuccess(`Article ${modalMode === 'add' ? 'added' : 'updated'} successfully!`);
@@ -136,12 +154,6 @@ export default function AdminResearchManager() {
                   </span>
                 )}
               </div>
-              {item.driveLink && (
-                <a href={item.driveLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-green-600 hover:text-green-700 mb-3">
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l4.58 7.5h13.54l4.58-7.5L17.29 3.5H7.71zm.79 1.5h7l1.5 2.5H7l1.5-2.5zm-2.31 4h11.62l3.84 6.25-3.5 5.75H6.85l-3.5-5.75L5.19 9z"/></svg>
-                  Google Drive
-                </a>
-              )}
               <div className="flex items-center gap-2 pt-3 border-t border-gray-100">
                 <button onClick={() => setViewItem(item)} className="flex-1 px-3 py-2 text-sm bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">View</button>
                 <button onClick={() => openEditModal(item)} className="flex-1 px-3 py-2 text-sm bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">Edit</button>
@@ -165,10 +177,6 @@ export default function AdminResearchManager() {
               <form onSubmit={handleSubmit} className="p-5 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
-                    <label className="block text-sm font-medium text-brand-dark mb-1">Slug (URL) *</label>
-                    <input type="text" required disabled={modalMode === 'edit'} value={formData.slug} onChange={e => setFormData(p => ({ ...p, slug: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary disabled:bg-gray-50" placeholder="article-slug" />
-                  </div>
-                  <div className="col-span-2">
                     <label className="block text-sm font-medium text-brand-dark mb-1">Title *</label>
                     <input type="text" required value={formData.title} onChange={e => setFormData(p => ({ ...p, title: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="Article Title" />
                   </div>
@@ -184,14 +192,6 @@ export default function AdminResearchManager() {
                     <label className="block text-sm font-medium text-brand-dark mb-1">Publish Date / Year</label>
                     <input type="text" value={formData.publishDate || formData.year || ''} onChange={e => setFormData(p => ({ ...p, publishDate: e.target.value, year: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="2025" />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-brand-dark mb-1">PDF URL</label>
-                    <input type="text" value={formData.pdf || ''} onChange={e => setFormData(p => ({ ...p, pdf: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="/research/file.pdf" />
-                  </div>
-                  <div className="col-span-2">
-                    <label className="block text-sm font-medium text-brand-dark mb-1">Google Drive Link</label>
-                    <input type="url" value={formData.driveLink || ''} onChange={e => setFormData(p => ({ ...p, driveLink: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="https://drive.google.com/..." />
-                  </div>
                   <div className="col-span-2">
                     <label className="block text-sm font-medium text-brand-dark mb-1">Summary *</label>
                     <textarea required rows={3} value={formData.summary} onChange={e => setFormData(p => ({ ...p, summary: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="Brief summary" />
@@ -201,6 +201,23 @@ export default function AdminResearchManager() {
                     <textarea rows={6} value={formData.content || ''} onChange={e => setFormData(p => ({ ...p, content: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="Full article content..." />
                   </div>
                 </div>
+
+                {/* File Uploads */}
+                <div className="space-y-4">
+                  <ImageUpload
+                    currentImage={formData.image}
+                    category="research"
+                    onImageChange={(url) => setFormData(p => ({ ...p, image: url }))}
+                    label="Research Image/Thumbnail"
+                  />
+                  
+                  <PDFUpload
+                    currentPDF={formData.pdf}
+                    onPDFChange={(url) => setFormData(p => ({ ...p, pdf: url }))}
+                    label="Research PDF Document"
+                  />
+                </div>
+
                 <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                   <button type="button" onClick={closeModal} className="px-6 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
                   <button type="submit" disabled={loading} className="px-6 py-2.5 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors disabled:opacity-50">{loading ? 'Saving...' : modalMode === 'add' ? 'Create Article' : 'Save Changes'}</button>
@@ -261,12 +278,6 @@ export default function AdminResearchManager() {
                     <p className="text-sm font-medium text-brand-dark mb-2">Content</p>
                     <div className="prose prose-sm max-w-none text-brand-muted whitespace-pre-wrap">{viewItem.content}</div>
                   </div>
-                )}
-                {viewItem.driveLink && (
-                  <a href={viewItem.driveLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.15 15l4.58 7.5h13.54l4.58-7.5L17.29 3.5H7.71zm.79 1.5h7l1.5 2.5H7l1.5-2.5zm-2.31 4h11.62l3.84 6.25-3.5 5.75H6.85l-3.5-5.75L5.19 9z"/></svg>
-                    Open in Google Drive
-                  </a>
                 )}
                 {viewItem.pdf && (
                   <a href={viewItem.pdf} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition-colors ml-2">

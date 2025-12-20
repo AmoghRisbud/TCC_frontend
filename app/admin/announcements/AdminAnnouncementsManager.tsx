@@ -1,6 +1,18 @@
 'use client';
 
 import React from 'react';
+import ImageUpload from '../components/ImageUpload';
+
+// Helper function to generate URL-friendly slug from title
+const generateSlug = (title: string): string => {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
 
 interface Announcement {
   id: string;
@@ -70,11 +82,17 @@ export default function AdminAnnouncementsManager() {
     try {
       setLoading(true);
       setError(null);
+      
+      // Auto-generate slug from title if adding new announcement
+      const dataToSubmit = modalMode === 'add' 
+        ? { ...formData, slug: generateSlug(formData.title), id: generateSlug(formData.title) }
+        : formData;
+      
       const method = modalMode === 'add' ? 'POST' : 'PUT';
       const res = await fetch('/api/admin/announcements', {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSubmit),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || `Failed to ${modalMode} announcement`);
@@ -203,27 +221,10 @@ export default function AdminAnnouncementsManager() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-brand-dark mb-1">
-                  Slug <span className="text-red-500">*</span>
+                  Title
                 </label>
                 <input
                   type="text"
-                  required
-                  disabled={modalMode === 'edit'}
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value, id: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-primary disabled:bg-gray-100"
-                  placeholder="campus-ambassador"
-                />
-                <p className="text-xs text-brand-muted mt-1">URL-friendly identifier (lowercase, hyphens)</p>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-brand-dark mb-1">
-                  Title <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-primary"
@@ -233,10 +234,9 @@ export default function AdminAnnouncementsManager() {
 
               <div>
                 <label className="block text-sm font-medium text-brand-dark mb-1">
-                  Description <span className="text-red-500">*</span>
+                  Description
                 </label>
                 <textarea
-                  required
                   rows={4}
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -245,28 +245,19 @@ export default function AdminAnnouncementsManager() {
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-brand-dark mb-1">
-                  Image Path <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.image}
-                  onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-primary"
-                  placeholder="/images/announcements/sample.jpeg"
-                />
-                <p className="text-xs text-brand-muted mt-1">Path to image in public folder</p>
-              </div>
+              <ImageUpload
+                currentImage={formData.image}
+                category="announcements"
+                onImageChange={(url) => setFormData({ ...formData, image: url })}
+                label="Announcement Image"
+              />
 
               <div>
                 <label className="block text-sm font-medium text-brand-dark mb-1">
-                  Date <span className="text-red-500">*</span>
+                  Date
                 </label>
                 <input
                   type="date"
-                  required
                   value={formData.date}
                   onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand-primary"

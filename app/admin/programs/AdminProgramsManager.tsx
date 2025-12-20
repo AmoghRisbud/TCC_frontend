@@ -1,6 +1,18 @@
 'use client';
 
 import React from 'react';
+import ImageUpload from '../components/ImageUpload';
+
+// Helper function to generate URL-friendly slug from title
+const generateSlug = (title: string): string => {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
 
 interface Program {
   slug: string;
@@ -12,6 +24,7 @@ interface Program {
   endDate?: string;
   fee?: string;
   duration?: string;
+  logo?: string;
 }
 
 const emptyProgram: Program = {
@@ -24,6 +37,7 @@ const emptyProgram: Program = {
   endDate: '',
   fee: '',
   duration: '',
+  logo: '',
 };
 
 export default function AdminProgramsManager() {
@@ -31,6 +45,7 @@ export default function AdminProgramsManager() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
+  const [dateError, setDateError] = React.useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [modalMode, setModalMode] = React.useState<'add' | 'edit'>('add');
@@ -69,6 +84,20 @@ export default function AdminProgramsManager() {
   const closeModal = () => {
     setIsModalOpen(false);
     setFormData(emptyProgram);
+    setDateError(null);
+  };
+
+  const validateDates = (startDate: string, endDate: string) => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      if (start > end) {
+        setDateError('Start date cannot be greater than end date');
+        return false;
+      }
+    }
+    setDateError(null);
+    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -76,11 +105,23 @@ export default function AdminProgramsManager() {
     try {
       setLoading(true);
       setError(null);
+      
+      // Validate dates
+      if (!validateDates(formData.startDate || '', formData.endDate || '')) {
+        setLoading(false);
+        return;
+      }
+      
+      // Auto-generate slug from title if adding new program
+      const dataToSubmit = modalMode === 'add' 
+        ? { ...formData, slug: generateSlug(formData.title) }
+        : formData;
+      
       const method = modalMode === 'add' ? 'POST' : 'PUT';
       const res = await fetch('/api/admin/programs', {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSubmit),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || `Failed to ${modalMode} program`);
@@ -212,10 +253,6 @@ export default function AdminProgramsManager() {
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium text-brand-dark mb-1">Slug *</label>
-                  <input type="text" required disabled={modalMode === 'edit'} value={formData.slug} onChange={e => setFormData(p => ({ ...p, slug: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary disabled:bg-gray-50" placeholder="program-slug" />
-                </div>
-                <div className="col-span-2">
                   <label className="block text-sm font-medium text-brand-dark mb-1">Title *</label>
                   <input type="text" required value={formData.title} onChange={e => setFormData(p => ({ ...p, title: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="Program Title" />
                 </div>
@@ -237,11 +274,34 @@ export default function AdminProgramsManager() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-brand-dark mb-1">Start Date</label>
-                  <input type="date" value={formData.startDate} onChange={e => setFormData(p => ({ ...p, startDate: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" />
+                  <input 
+                    type="date" 
+                    value={formData.startDate} 
+                    onChange={e => {
+                      const newStartDate = e.target.value;
+                      setFormData(p => ({ ...p, startDate: newStartDate }));
+                      validateDates(newStartDate, formData.endDate || '');
+                    }} 
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" 
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-brand-dark mb-1">End Date</label>
-                  <input type="date" value={formData.endDate} onChange={e => setFormData(p => ({ ...p, endDate: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" />
+                  <input 
+                    type="date" 
+                    value={formData.endDate} 
+                    onChange={e => {
+                      const newEndDate = e.target.value;
+                      setFormData(p => ({ ...p, endDate: newEndDate }));
+                      validateDates(formData.startDate || '', newEndDate);
+                    }} 
+                    className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary ${
+                      dateError ? 'border-red-300 bg-red-50' : 'border-gray-200'
+                    }`}
+                  />
+                  {dateError && (
+                    <p className="text-xs text-red-600 mt-1">{dateError}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-brand-dark mb-1">Duration</label>
@@ -252,6 +312,15 @@ export default function AdminProgramsManager() {
                   <input type="text" value={formData.fee} onChange={e => setFormData(p => ({ ...p, fee: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="e.g., ₹50,000" />
                 </div>
               </div>
+
+              {/* Image Upload Field */}
+              <ImageUpload
+                currentImage={formData.logo}
+                category="programs"
+                onImageChange={(url) => setFormData(p => ({ ...p, logo: url }))}
+                label="Program Logo"
+              />
+
               <div className="flex gap-3 pt-4">
                 <button type="button" onClick={closeModal} className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
                 <button type="submit" disabled={loading} className="flex-1 px-4 py-2.5 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors disabled:opacity-50">{loading ? 'Saving...' : modalMode === 'add' ? 'Add Program' : 'Save Changes'}</button>

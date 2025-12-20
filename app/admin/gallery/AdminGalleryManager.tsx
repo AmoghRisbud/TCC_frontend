@@ -1,6 +1,18 @@
 'use client';
 
 import React from 'react';
+import ImageUpload from '../components/ImageUpload';
+
+// Helper function to generate URL-friendly ID from title
+const generateId = (title: string): string => {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '') + '-' + Date.now();
+};
 
 interface GalleryItem {
   id: string;
@@ -56,8 +68,14 @@ export default function AdminGalleryManager() {
     try {
       setLoading(true);
       setError(null);
+      
+      // Auto-generate ID from title if adding new item
+      const dataToSubmit = modalMode === 'add' 
+        ? { ...formData, id: generateId(formData.title) }
+        : formData;
+      
       const method = modalMode === 'add' ? 'POST' : 'PUT';
-      const res = await fetch('/api/admin/gallery', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+      const res = await fetch('/api/admin/gallery', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataToSubmit) });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || `Failed to ${modalMode} item`);
       setSuccess(`Gallery item ${modalMode === 'add' ? 'added' : 'updated'} successfully!`);
@@ -159,17 +177,17 @@ export default function AdminGalleryManager() {
             </div>
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-brand-dark mb-1">ID *</label>
-                <input type="text" required disabled={modalMode === 'edit'} value={formData.id} onChange={e => setFormData(p => ({ ...p, id: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary disabled:bg-gray-50" placeholder="unique-id" />
-              </div>
-              <div>
                 <label className="block text-sm font-medium text-brand-dark mb-1">Title *</label>
                 <input type="text" required value={formData.title} onChange={e => setFormData(p => ({ ...p, title: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="Image title" />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-brand-dark mb-1">Image URL *</label>
-                <input type="text" required value={formData.image} onChange={e => setFormData(p => ({ ...p, image: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="/images/gallery/..." />
-              </div>
+
+              <ImageUpload
+                currentImage={formData.image}
+                category="gallery"
+                onImageChange={(url) => setFormData(p => ({ ...p, image: url }))}
+                label="Gallery Image *"
+              />
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-brand-dark mb-1">Category</label>

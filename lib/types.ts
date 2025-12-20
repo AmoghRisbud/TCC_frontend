@@ -16,7 +16,6 @@ export interface Program {
   mode?: string;
   ctaLabel?: string;
   ctaUrl?: string;
-  thumbnail?: string;
   brochureUrl?: string;
   tags?: string[];
   featured?: boolean;
@@ -38,6 +37,10 @@ export interface Research {
   thumbnail?: string;
   tags?: string[];
   pdf?: string;
+  content?: string;
+  author?: string;
+  category?: string;
+  publishDate?: string;
 }
 export interface Testimonial {
   id: string;

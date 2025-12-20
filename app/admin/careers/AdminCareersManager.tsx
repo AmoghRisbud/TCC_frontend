@@ -24,6 +24,7 @@ export default function AdminCareersManager() {
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
+  const [dateError, setDateError] = React.useState<string | null>(null);
 
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [modalMode, setModalMode] = React.useState<'add' | 'edit'>('add');
@@ -64,13 +65,37 @@ export default function AdminCareersManager() {
     setIsModalOpen(true); 
   };
 
-  const closeModal = () => { setIsModalOpen(false); setFormData(emptyJob); };
+  const closeModal = () => { 
+    setIsModalOpen(false); 
+    setFormData(emptyJob); 
+    setDateError(null);
+  };
+
+  const validateClosingDate = (closingDate: string) => {
+    if (closingDate) {
+      const closing = new Date(closingDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (closing < today) {
+        setDateError('Closing date cannot be in the past');
+        return false;
+      }
+    }
+    setDateError(null);
+    return true;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setLoading(true);
       setError(null);
+      
+      // Validate closing date
+      if (!validateClosingDate(formData.closingDate || '')) {
+        setLoading(false);
+        return;
+      }
       
       // Process array inputs
       const processedData = {
@@ -220,7 +245,7 @@ export default function AdminCareersManager() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Slug (URL) *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Position ID *</label>
                     <input
                       type="text"
                       required
@@ -229,6 +254,7 @@ export default function AdminCareersManager() {
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
                       placeholder="e.g., senior-legal-associate"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Unique identifier for this position</p>
                   </div>
                 </div>
 
@@ -346,9 +372,18 @@ export default function AdminCareersManager() {
                     <input
                       type="date"
                       value={formData.closingDate || ''}
-                      onChange={e => setFormData({ ...formData, closingDate: e.target.value })}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
+                      onChange={e => {
+                        const newClosingDate = e.target.value;
+                        setFormData({ ...formData, closingDate: newClosingDate });
+                        validateClosingDate(newClosingDate);
+                      }}
+                      className={`w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary ${
+                        dateError ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
                     />
+                    {dateError && (
+                      <p className="text-xs text-red-600 mt-1">{dateError}</p>
+                    )}
                   </div>
                 </div>
 

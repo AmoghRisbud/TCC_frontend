@@ -1,6 +1,18 @@
 'use client';
 
 import React from 'react';
+import ImageUpload from '../components/ImageUpload';
+
+// Helper function to generate URL-friendly ID from name
+const generateId = (name: string): string => {
+  return name
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '') + '-' + Date.now();
+};
 
 interface Testimonial {
   id: string;
@@ -61,8 +73,14 @@ export default function AdminTestimonialsManager() {
     try {
       setLoading(true);
       setError(null);
+      
+      // Auto-generate ID from name if adding new testimonial
+      const dataToSubmit = modalMode === 'add' 
+        ? { ...formData, id: generateId(formData.name) }
+        : formData;
+      
       const method = modalMode === 'add' ? 'POST' : 'PUT';
-      const res = await fetch('/api/admin/testimonials', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(formData) });
+      const res = await fetch('/api/admin/testimonials', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataToSubmit) });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || `Failed to ${modalMode} testimonial`);
       setSuccess(`Testimonial ${modalMode === 'add' ? 'added' : 'updated'} successfully!`);
@@ -171,11 +189,7 @@ export default function AdminTestimonialsManager() {
             </div>
             <form onSubmit={handleSubmit} className="p-5 space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-brand-dark mb-1">ID *</label>
-                  <input type="text" required disabled={modalMode === 'edit'} value={formData.id} onChange={e => setFormData(p => ({ ...p, id: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary disabled:bg-gray-50" placeholder="unique-id" />
-                </div>
-                <div>
+                <div className="col-span-2">
                   <label className="block text-sm font-medium text-brand-dark mb-1">Name *</label>
                   <input type="text" required value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="John Doe" />
                 </div>
@@ -214,6 +228,15 @@ export default function AdminTestimonialsManager() {
                   <label htmlFor="featured" className="text-sm font-medium text-brand-dark">Featured on Homepage</label>
                 </div>
               </div>
+
+              {/* Image Upload */}
+              <ImageUpload
+                currentImage={formData.image}
+                category="testimonials"
+                onImageChange={(url) => setFormData(p => ({ ...p, image: url }))}
+                label="Profile Photo"
+              />
+
               <div className="flex gap-3 pt-4">
                 <button type="button" onClick={closeModal} className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
                 <button type="submit" disabled={loading} className="flex-1 px-4 py-2.5 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors disabled:opacity-50">{loading ? 'Saving...' : modalMode === 'add' ? 'Add' : 'Save'}</button>

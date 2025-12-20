@@ -82,7 +82,7 @@ export default function ContactPage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="section bg-brand-hero text-white from-brand-primary to-brand-accent text-white">
+      <section className="section bg-brand-hero from-brand-primary to-brand-accent text-white">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="h1 mb-6">Get in Touch</h1>
@@ -135,7 +135,10 @@ export default function ContactPage() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
-                  onClick={() => setShowStudentForm(true)}
+                  onClick={() => {
+                    setShowStudentForm(true);
+                    setShowOrgForm(false);
+                  }}
                   className="btn-secondary"
                 >
                   🎓 Are you a Student and want to learn?
