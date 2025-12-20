@@ -76,7 +76,7 @@ export default function ResearchPage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="section bg-gradient-to-r from-brand-primary to-brand-accent text-white">
+      <section className="section bg-brand-hero text-white">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="h1 mb-6">Our Proof of Concept</h1>
@@ -97,7 +97,16 @@ export default function ResearchPage() {
                 href={p.pdf || `/research/${p.slug}`}
                 {...(p.pdf && { target: "_blank", rel: "noopener noreferrer" })}
                 className="card-interactive group"
-                onClick={(e) => handleResearchClick(p.slug, e)}
+                onClick={(e) => {
+                  if (p.pdf) {
+                    e.preventDefault();
+                    Promise.resolve(handleResearchClick(p.slug, e)).finally(() => {
+                      window.open(p.pdf!, '_blank', 'noopener,noreferrer');
+                    });
+                  } else {
+                    handleResearchClick(p.slug, e);
+                  }
+                }}
               >
 
                 <div className="flex flex-col h-full">
