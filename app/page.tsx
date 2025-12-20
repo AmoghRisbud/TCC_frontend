@@ -1,7 +1,10 @@
-import SectionHeading from './components/SectionHeading';
-import Link from 'next/link';
-import { getPrograms, getTestimonials, getGallery } from '../lib/content';
-import Image from 'next/image';
+import SectionHeading from "./components/SectionHeading";
+import Link from "next/link";
+import { getPrograms, getTestimonials, getGallery } from "../lib/content";
+import Image from "next/image";
+import { getAnnouncements } from "../lib/announcements";
+
+const announcements = getAnnouncements();
 
 export default async function HomePage() {
   const allPrograms = await getPrograms();
@@ -24,14 +27,15 @@ export default async function HomePage() {
         <div className="container relative py-24 md:py-32 lg:py-40">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="h1 text-white mb-6 animate-fade-in">
-              Helping Law Students Find{' '}
-              <span className="text-brand-secondary">Clarity</span>,{' '}
-              <span className="text-brand-secondary">Skills</span> &{' '}
+              Helping Law Students Find{" "}
+              <span className="text-brand-secondary">Clarity</span>,{" "}
+              <span className="text-brand-secondary">Skills</span> &{" "}
               <span className="text-brand-secondary">Direction</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in">
-              Join a community-led legal education ecosystem designed to empower the next generation of legal professionals.
+              Join a community-led legal education ecosystem designed to empower
+              the next generation of legal professionals.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
@@ -84,15 +88,79 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Floating Announcements */}
+      <section className="relative z-20 -mt-14">
+        <div className="container">
+          <div
+            className="
+             backdrop-blur-md bg-white/85
+             border border-white/60
+             shadow-xl
+             rounded-2xl
+             px-6 py-4
+             flex items-center gap-6
+           "
+          >
+            {/* Badge */}
+            <span
+              className="
+               shrink-0
+               inline-flex items-center gap-2
+               text-xs font-semibold
+               px-3 py-1
+               rounded-full
+               bg-brand-secondary/15
+               text-brand-secondary
+             "
+            >
+              📢 Announcements
+            </span>
+
+            {/* Marquee */}
+            <div className="relative overflow-hidden flex-1">
+              <div className="flex w-max gap-10 animate-marquee hover:[animation-play-state:paused]">
+                {announcements.map((a) => (
+                  <Link
+                    key={a.id}
+                    href={`/announcements/${a.slug}`}
+                    className="flex items-center gap-4 group"
+                  >
+                    <div className="relative w-24 h-14 rounded-lg overflow-hidden shadow-sm border bg-white">
+                      <Image
+                        src={a.image}
+                        alt={a.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <p className="text-sm font-medium text-brand-dark group-hover:text-brand-primary transition">
+                      {a.title}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Optional CTA */}
+            <Link
+              href="/announcements"
+              className="text-sm font-medium text-brand-primary hover:underline shrink-0"
+            >
+              View all →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
       <section className="section bg-brand-light -mt-1">
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             {[
-              { value: '500+', label: 'Students Mentored' },
-              { value: '50+', label: 'Expert Educators' },
-              { value: '20+', label: 'Programs Delivered' },
-              { value: '10+', label: 'Partner Institutions' },
+              { value: "500+", label: "Students Mentored" },
+              { value: "50+", label: "Expert Educators" },
+              { value: "20+", label: "Programs Delivered" },
+              { value: "10+", label: "Partner Institutions" },
             ].map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-3xl md:text-4xl font-bold gradient-text mb-2">
@@ -105,10 +173,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-
       {/* Featured Programs */}
       <section className="section relative overflow-hidden bg-gradient-to-br from-white via-brand-light to-white">
-
         {/* Decorative glow */}
         <div
           aria-hidden
@@ -124,13 +190,14 @@ export default async function HomePage() {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {programs.map(p => (
+            {programs.map((p) => (
               <Link
                 key={p.slug}
                 href={`/programs/${p.slug}`}
                 className="group block"
               >
-<div className="card-interactive relative
+                <div
+                  className="card-interactive relative
                 flex flex-col items-center justify-center p-8 text-center
                 bg-gradient-to-br
                 from-[#FAF8F2]
@@ -140,9 +207,8 @@ export default async function HomePage() {
                 shadow-md
                 hover:shadow-xl
                 hover:ring-brand-secondary/40
-                transition-all duration-300">
-
-
+                transition-all duration-300"
+                >
                   {/* Logo */}
                   <div className="mb-4 w-14 h-14 rounded-xl bg-white border flex items-center justify-center">
                     {p.logo && (
@@ -170,12 +236,21 @@ export default async function HomePage() {
                   <div className="mt-5">
                     <span className="inline-flex items-center gap-2 text-brand-primary font-medium group-hover:gap-3 transition-all">
                       View Details
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
                       </svg>
                     </span>
                   </div>
-
                 </div>
               </Link>
             ))}
@@ -188,7 +263,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
 
       {/* Community Moments – Scrolling Gallery */}
       {gallery.length > 0 && (
@@ -225,28 +299,29 @@ export default async function HomePage() {
         </section>
       )}
 
-{/* Testimonials */}
-<section className="section relative overflow-hidden
-                   bg-gradient-to-br from-brand-light via-white to-brand-light">
-
-  {/* Decorative radial glow */}
-  <div
-    aria-hidden
-    className="pointer-events-none absolute inset-0
-               bg-[radial-gradient(circle_at_20%_20%,rgba(230,182,92,0.10),transparent_45%)]"
-  />
-
-  <div className="container relative">
-    <SectionHeading
-      title="What Our Community Says"
-      subtitle="Hear from students and educators who have been part of our journey."
-    />
-
-    <div className="grid md:grid-cols-3 gap-8">
-      {testimonials.map(t => (
+      {/* Testimonials */}
+      <section
+        className="section relative overflow-hidden
+                   bg-gradient-to-br from-brand-light via-white to-brand-light"
+      >
+        {/* Decorative radial glow */}
         <div
-          key={t.id}
-          className="card relative
+          aria-hidden
+          className="pointer-events-none absolute inset-0
+               bg-[radial-gradient(circle_at_20%_20%,rgba(230,182,92,0.10),transparent_45%)]"
+        />
+
+        <div className="container relative">
+          <SectionHeading
+            title="What Our Community Says"
+            subtitle="Hear from students and educators who have been part of our journey."
+          />
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {testimonials.map((t) => (
+              <div
+                key={t.id}
+                className="card relative
                      bg-gradient-to-br
                      from-[#F8F6EE]
                      via-[#F1F4EF]
@@ -256,57 +331,56 @@ export default async function HomePage() {
                      hover:-translate-y-1 hover:shadow-xl
                      transition-all duration-300
                      flex flex-col"
-        >
+              >
+                {/* Quote icon */}
+                <svg
+                  className="absolute top-4 right-4 w-8 h-8 text-brand-primary/20"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                </svg>
 
-          {/* Quote icon */}
-          <svg
-            className="absolute top-4 right-4 w-8 h-8 text-brand-primary/20"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-          </svg>
+                {/* Quote */}
+                <p className="text-brand-dark leading-relaxed mb-4 italic line-clamp-5">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
 
-          {/* Quote */}
-          <p className="text-brand-dark leading-relaxed mb-4 italic line-clamp-5">
-            &ldquo;{t.quote}&rdquo;
-          </p>
+                {/* Optional "Read more" hint */}
+                {t.quote.length > 250 && (
+                  <span className="text-sm text-brand-primary font-medium">
+                    Read more
+                  </span>
+                )}
 
-          {/* Optional "Read more" hint */}
-          {t.quote.length > 250 && (
-            <span className="text-sm text-brand-primary font-medium">
-              Read more
-            </span>
-          )}
+                <div className="flex-grow" />
 
-          <div className="flex-grow" />
+                {/* Author */}
+                <div className="flex items-center gap-3 pt-4 mt-4 border-t border-gray-100">
+                  <div className="w-10 h-10 bg-brand-primary/10 rounded-full flex items-center justify-center">
+                    <span className="text-brand-primary font-semibold">
+                      {t.name.charAt(0)}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="font-semibold text-brand-dark">{t.name}</p>
+                    {t.role && (
+                      <p className="text-sm text-brand-muted">{t.role}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
 
-          {/* Author */}
-          <div className="flex items-center gap-3 pt-4 mt-4 border-t border-gray-100">
-            <div className="w-10 h-10 bg-brand-primary/10 rounded-full flex items-center justify-center">
-              <span className="text-brand-primary font-semibold">
-                {t.name.charAt(0)}
-              </span>
-            </div>
-            <div>
-              <p className="font-semibold text-brand-dark">{t.name}</p>
-              {t.role && <p className="text-sm text-brand-muted">{t.role}</p>}
-            </div>
+          <div className="text-center mt-10">
+            <Link href="/testimonials" className="btn-secondary">
+              Read More Testimonials
+            </Link>
           </div>
         </div>
-      ))}
-    </div>
-
-    <div className="text-center mt-10">
-      <Link href="/testimonials" className="btn-secondary">
-        Read More Testimonials
-      </Link>
-    </div>
-  </div>
-</section>
-
-
+      </section>
 
       {/* CTA Section */}
       <section className="section bg-brand-dark">
@@ -316,20 +390,15 @@ export default async function HomePage() {
               Ready to Start Your Legal Journey?
             </h2>
             <p className="text-xl text-gray-400 mb-10">
-              Join thousands of law students who are already part of our thriving community.
+              Join thousands of law students who are already part of our
+              thriving community.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/community"
-                className="btn shadow-2xl"
-              >
+              <Link href="/community" className="btn shadow-2xl">
                 Join the Community
               </Link>
 
-              <Link
-                href="/programs"
-                className="btn shadow-2xl"
-              >
+              <Link href="/programs" className="btn shadow-2xl">
                 Explore Programs
               </Link>
 

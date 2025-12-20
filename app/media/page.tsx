@@ -1,8 +1,8 @@
-import Image from 'next/image';
-import SectionHeading from '../components/SectionHeading';
-import { getGallery } from '../../lib/content';
+import Image from "next/image";
+import SectionHeading from "../components/SectionHeading";
+import { getGallery } from "../../lib/content";
 
-export const metadata = { title: 'Media | TCC' };
+export const metadata = { title: "Media | TCC" };
 
 export default async function MediaPage() {
   const items = await getGallery();
@@ -15,7 +15,8 @@ export default async function MediaPage() {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="h1 mb-6">In Pictures</h1>
             <p className="text-xl text-white/80 leading-relaxed">
-              Explore moments from our events, workshops, and community gatherings.
+              Explore moments from our events, workshops, and community
+              gatherings.
             </p>
           </div>
         </div>
@@ -31,7 +32,7 @@ export default async function MediaPage() {
 
           {items.length > 0 ? (
             <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-10">
-              {items.map(i => (
+              {items.map((i) => (
                 <div
                   key={i.id}
                   className="card group cursor-pointer overflow-hidden"
@@ -56,9 +57,7 @@ export default async function MediaPage() {
 
                   {/* Description (optional) */}
                   {i.description && (
-                    <p className="text-sm text-brand-muted">
-                      {i.description}
-                    </p>
+                    <p className="text-sm text-brand-muted">{i.description}</p>
                   )}
                 </div>
               ))}

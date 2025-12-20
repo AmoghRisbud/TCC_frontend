@@ -5,21 +5,19 @@ import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {
   const programs = await getPrograms();
-  return programs.map(p => ({ slug: p.slug }));
+  return programs.map((p) => ({ slug: p.slug }));
 }
 
 export default async function ProgramDetail({ params }: { params: { slug: string } }) {
   const programs = await getPrograms();
-  const program = programs.find(p => p.slug === params.slug);
+  const program = programs.find((p) => p.slug === params.slug);
   if (!program) return notFound();
 
   return (
     <div>
-
       {/* HERO */}
       <section className="section bg-brand-hero text-white">
         <div className="container max-w-4xl text-center">
-
           {program.logo && (
             <div className="mx-auto mb-6 w-20 h-20 rounded-xl bg-white flex items-center justify-center shadow">
               <Image
@@ -35,9 +33,7 @@ export default async function ProgramDetail({ params }: { params: { slug: string
 
           <h1 className="h1 mb-4">{program.title}</h1>
 
-          <p className="text-lg text-white/80 max-w-2xl mx-auto">
-            {program.shortDescription}
-          </p>
+          <p className="text-lg text-white/80 max-w-2xl mx-auto">{program.shortDescription}</p>
 
           {/* Badges */}
           <div className="flex flex-wrap justify-center gap-3 mt-6">
@@ -57,41 +53,44 @@ export default async function ProgramDetail({ params }: { params: { slug: string
               </span>
             )}
           </div>
-
         </div>
       </section>
 
       {/* CONTENT */}
       <section className="section bg-brand-light">
         <div className="container max-w-4xl grid md:grid-cols-3 gap-10">
-
           {/* LEFT: Description */}
           <div className="md:col-span-2">
-
             <h2 className="h2 mb-4">Program Overview</h2>
             <p className="text-brand-muted leading-relaxed mb-8">
               {program.fullDescription || program.shortDescription}
             </p>
-
           </div>
 
           {/* RIGHT: Program Meta */}
           <aside className="bg-white rounded-2xl p-6 shadow-sm border h-fit">
-
             <h3 className="font-semibold mb-4">Program Details</h3>
 
             <ul className="space-y-3 text-sm">
               {program.mode && (
-                <li><strong>Mode:</strong> {program.mode}</li>
+                <li>
+                  <strong>Mode:</strong> {program.mode}
+                </li>
               )}
               {program.location && (
-                <li><strong>Location:</strong> {program.location}</li>
+                <li>
+                  <strong>Location:</strong> {program.location}
+                </li>
               )}
               {program.startDate && (
-                <li><strong>Start Date:</strong> {program.startDate}</li>
+                <li>
+                  <strong>Start Date:</strong> {program.startDate}
+                </li>
               )}
               {program.endDate && (
-                <li><strong>End Date:</strong> {program.endDate}</li>
+                <li>
+                  <strong>End Date:</strong> {program.endDate}
+                </li>
               )}
             </ul>
 
@@ -106,9 +105,7 @@ export default async function ProgramDetail({ params }: { params: { slug: string
                 {program.ctaLabel || 'Apply Now'}
               </Link>
             )}
-
           </aside>
-
         </div>
       </section>
     </div>

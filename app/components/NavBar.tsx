@@ -14,7 +14,7 @@ const links = [
   { href: '/media', label: 'Media' },
   { href: '/careers', label: 'Careers' },
   { href: '/contact', label: 'Contact' },
-  { href: '/admin', label: 'Admin' }
+  { href: '/admin', label: 'Admin' },
 ];
 
 export default function NavBar() {
@@ -41,29 +41,29 @@ export default function NavBar() {
             The Collective Counsel
           </span>
         </Link>
-        
+
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-1" aria-label="Main navigation">
-          {links.map(l => (
-            <Link 
-              key={l.href} 
-              href={l.href} 
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
               className="px-4 py-2 text-sm font-medium text-brand-dark/70 hover:text-brand-primary rounded-lg hover:bg-brand-primary/5 transition-all duration-200"
             >
               {l.label}
             </Link>
           ))}
-          
+
           {/* Auth Buttons */}
           {!loading && !session && (
-            <button 
+            <button
               onClick={() => signIn()}
               className="ml-4 px-4 py-2 text-sm font-medium text-brand-primary border-2 border-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition-all duration-200"
             >
               Sign In
             </button>
           )}
-          
+
           {!loading && session && (
             <div className="ml-4 flex items-center gap-3">
               <div className="flex items-center gap-2">
@@ -79,11 +79,13 @@ export default function NavBar() {
                 <span className="text-sm font-medium text-brand-dark">
                   {session.user.name}
                   {session.user.isAdmin && (
-                    <span className="ml-2 text-xs bg-brand-primary text-white px-2 py-0.5 rounded">Admin</span>
+                    <span className="ml-2 text-xs bg-brand-primary text-white px-2 py-0.5 rounded">
+                      Admin
+                    </span>
                   )}
                 </span>
               </div>
-              <button 
+              <button
                 onClick={() => signOut()}
                 className="px-4 py-2 text-sm font-medium text-brand-dark/70 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
               >
@@ -100,17 +102,27 @@ export default function NavBar() {
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMenuOpen}
         >
-          <svg 
-            className="w-6 h-6 text-brand-dark" 
-            fill="none" 
-            stroke="currentColor" 
+          <svg
+            className="w-6 h-6 text-brand-dark"
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
             {isMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             )}
           </svg>
         </button>
@@ -118,26 +130,26 @@ export default function NavBar() {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <nav 
+        <nav
           className="md:hidden bg-white border-t border-gray-100 animate-fade-in"
           aria-label="Mobile navigation"
         >
           <div className="container py-4 space-y-1">
-            {links.map(l => (
-              <Link 
-                key={l.href} 
-                href={l.href} 
+            {links.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
                 className="block px-4 py-3 text-brand-dark/70 hover:text-brand-primary hover:bg-brand-primary/5 rounded-lg transition-all duration-200"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {l.label}
               </Link>
             ))}
-            
+
             {/* Mobile Auth */}
             <div className="pt-4 px-4 space-y-2">
               {!loading && !session && (
-                <button 
+                <button
                   onClick={() => {
                     setIsMenuOpen(false);
                     signIn();
@@ -147,7 +159,7 @@ export default function NavBar() {
                   Sign In
                 </button>
               )}
-              
+
               {!loading && session && (
                 <>
                   <div className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg">
@@ -163,11 +175,13 @@ export default function NavBar() {
                     <div>
                       <p className="text-sm font-medium text-brand-dark">{session.user.name}</p>
                       {session.user.isAdmin && (
-                        <span className="text-xs bg-brand-primary text-white px-2 py-0.5 rounded">Admin</span>
+                        <span className="text-xs bg-brand-primary text-white px-2 py-0.5 rounded">
+                          Admin
+                        </span>
                       )}
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={() => {
                       setIsMenuOpen(false);
                       signOut();

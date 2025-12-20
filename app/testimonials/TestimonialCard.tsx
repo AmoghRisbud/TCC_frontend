@@ -33,9 +33,7 @@ export default function TestimonialCard({ t }: { t: Testimonial }) {
       {/* Author */}
       <div className="flex items-center gap-3 pt-4 mt-4 border-t border-gray-100">
         <div className="w-12 h-12 bg-brand-primary/10 rounded-full flex items-center justify-center">
-          <span className="text-brand-primary font-semibold text-lg">
-            {t.name.charAt(0)}
-          </span>
+          <span className="text-brand-primary font-semibold text-lg">{t.name.charAt(0)}</span>
         </div>
         <div>
           <p className="font-semibold text-brand-dark">{t.name}</p>

@@ -1,7 +1,7 @@
-import { getTestimonials } from '../../lib/content';
-import TestimonialsGrid from './TestimonialsGrid';
+import { getTestimonials } from "../../lib/content";
+import TestimonialsGrid from "./TestimonialsGrid";
 
-export const metadata = { title: 'Testimonials | TCC' };
+export const metadata = { title: "Testimonials | TCC" };
 
 export default async function TestimonialsPage() {
   const testimonials = await getTestimonials();
@@ -14,7 +14,8 @@ export default async function TestimonialsPage() {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="h1 mb-6">Testimonials</h1>
             <p className="text-xl text-white/80 leading-relaxed">
-              Hear what our community members have to say about their experience with TCC.
+              Hear what our community members have to say about their experience
+              with TCC.
             </p>
           </div>
         </div>

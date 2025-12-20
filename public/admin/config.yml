@@ -42,21 +42,120 @@ collections:
       - label: "Category"
         field: category
     fields:
-      - { name: title, label: Title, widget: string, hint: "Program title displayed on the website" }
-      - { name: shortDescription, label: Short Description, widget: string, hint: "Brief description for program cards (max 150 chars)" }
-      - { name: fullDescription, label: Full Description, widget: markdown, required: false, hint: "Detailed program description with formatting support" }
-      - { name: category, label: Category, widget: select, required: false, options: ["Engagement", "Training", "Workshop", "Mentorship", "Certification"], hint: "Program category for filtering" }
-      - { name: startDate, label: Start Date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, required: false }
-      - { name: endDate, label: End Date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, required: false }
-      - { name: location, label: Location, widget: string, required: false, hint: "Physical location or 'Remote'" }
-      - { name: mode, label: Mode, widget: select, required: false, options: ["online", "offline", "hybrid"], hint: "Delivery mode" }
-      - { name: ctaLabel, label: CTA Button Label, widget: string, required: false, default: "Learn More" }
-      - { name: ctaUrl, label: CTA URL, widget: string, required: false, hint: "Link for the call-to-action button" }
-      - { name: thumbnail, label: Thumbnail Image, widget: image, required: false, hint: "Program thumbnail image" }
-      - { name: brochureUrl, label: Brochure URL, widget: file, required: false, hint: "PDF brochure for download" }
-      - { name: tags, label: Tags, widget: list, required: false, hint: "Comma-separated tags for filtering" }
-      - { name: featured, label: Featured, widget: boolean, default: false, hint: "Show on homepage" }
-      - { name: status, label: Status, widget: select, default: "draft", options: ["draft", "upcoming", "active", "completed", "archived"] }
+      - {
+          name: title,
+          label: Title,
+          widget: string,
+          hint: "Program title displayed on the website",
+        }
+      - {
+          name: shortDescription,
+          label: Short Description,
+          widget: string,
+          hint: "Brief description for program cards (max 150 chars)",
+        }
+      - {
+          name: fullDescription,
+          label: Full Description,
+          widget: markdown,
+          required: false,
+          hint: "Detailed program description with formatting support",
+        }
+      - {
+          name: category,
+          label: Category,
+          widget: select,
+          required: false,
+          options:
+            [
+              "Engagement",
+              "Training",
+              "Workshop",
+              "Mentorship",
+              "Certification",
+            ],
+          hint: "Program category for filtering",
+        }
+      - {
+          name: startDate,
+          label: Start Date,
+          widget: datetime,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          required: false,
+        }
+      - {
+          name: endDate,
+          label: End Date,
+          widget: datetime,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          required: false,
+        }
+      - {
+          name: location,
+          label: Location,
+          widget: string,
+          required: false,
+          hint: "Physical location or 'Remote'",
+        }
+      - {
+          name: mode,
+          label: Mode,
+          widget: select,
+          required: false,
+          options: ["online", "offline", "hybrid"],
+          hint: "Delivery mode",
+        }
+      - {
+          name: ctaLabel,
+          label: CTA Button Label,
+          widget: string,
+          required: false,
+          default: "Learn More",
+        }
+      - {
+          name: ctaUrl,
+          label: CTA URL,
+          widget: string,
+          required: false,
+          hint: "Link for the call-to-action button",
+        }
+      - {
+          name: thumbnail,
+          label: Thumbnail Image,
+          widget: image,
+          required: false,
+          hint: "Program thumbnail image",
+        }
+      - {
+          name: brochureUrl,
+          label: Brochure URL,
+          widget: file,
+          required: false,
+          hint: "PDF brochure for download",
+        }
+      - {
+          name: tags,
+          label: Tags,
+          widget: list,
+          required: false,
+          hint: "Comma-separated tags for filtering",
+        }
+      - {
+          name: featured,
+          label: Featured,
+          widget: boolean,
+          default: false,
+          hint: "Show on homepage",
+        }
+      - {
+          name: status,
+          label: Status,
+          widget: select,
+          default: "draft",
+          options: ["draft", "upcoming", "active", "completed", "archived"],
+        }
       - label: Sessions
         name: sessions
         widget: list
@@ -64,7 +163,13 @@ collections:
         summary: "{{fields.title}} - {{fields.date}}"
         fields:
           - { name: title, label: Session Title, widget: string }
-          - { name: date, label: Session Date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false }
+          - {
+              name: date,
+              label: Session Date,
+              widget: datetime,
+              date_format: "YYYY-MM-DD",
+              time_format: false,
+            }
           - { name: speakers, label: Speakers, widget: list, required: false }
 
   # Projects Collection - Showcase TCC projects
@@ -80,11 +185,27 @@ collections:
     sortable_fields: ["title", "year"]
     fields:
       - { name: title, label: Title, widget: string }
-      - { name: summary, label: Summary, widget: string, hint: "Brief project summary for cards" }
-      - { name: description, label: Description, widget: markdown, required: false, hint: "Detailed project description" }
+      - {
+          name: summary,
+          label: Summary,
+          widget: string,
+          hint: "Brief project summary for cards",
+        }
+      - {
+          name: description,
+          label: Description,
+          widget: markdown,
+          required: false,
+          hint: "Detailed project description",
+        }
       - { name: year, label: Year, widget: string, required: false }
       - { name: client, label: Client/Partner, widget: string, required: false }
-      - { name: thumbnail, label: Thumbnail Image, widget: image, required: false }
+      - {
+          name: thumbnail,
+          label: Thumbnail Image,
+          widget: image,
+          required: false,
+        }
       - { name: tags, label: Tags, widget: list, required: false }
       - label: Impact Metrics
         name: impactMetrics
@@ -111,15 +232,75 @@ collections:
         field: featured
         pattern: true
     fields:
-      - { name: name, label: Name, widget: string, hint: "Full name of the person giving feedback" }
-      - { name: role, label: Role, widget: string, required: false, hint: "e.g., Law Student, Legal Professional" }
-      - { name: organization, label: Organization, widget: string, required: false, hint: "University or company name" }
-      - { name: quote, label: Quote/Review, widget: text, hint: "The testimonial or review text" }
-      - { name: rating, label: Rating (1-5), widget: number, required: false, value_type: "int", min: 1, max: 5, hint: "Star rating from 1 to 5" }
-      - { name: photo, label: Photo, widget: image, required: false, hint: "Profile photo of the reviewer" }
-      - { name: programRef, label: Related Program, widget: relation, collection: "programs", search_fields: ["title"], value_field: "{{slug}}", display_fields: ["title"], required: false, hint: "Link to a related program" }
-      - { name: date, label: Date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, required: false }
-      - { name: featured, label: Featured, widget: boolean, default: false, hint: "Show on homepage" }
+      - {
+          name: name,
+          label: Name,
+          widget: string,
+          hint: "Full name of the person giving feedback",
+        }
+      - {
+          name: role,
+          label: Role,
+          widget: string,
+          required: false,
+          hint: "e.g., Law Student, Legal Professional",
+        }
+      - {
+          name: organization,
+          label: Organization,
+          widget: string,
+          required: false,
+          hint: "University or company name",
+        }
+      - {
+          name: quote,
+          label: Quote/Review,
+          widget: text,
+          hint: "The testimonial or review text",
+        }
+      - {
+          name: rating,
+          label: Rating (1-5),
+          widget: number,
+          required: false,
+          value_type: "int",
+          min: 1,
+          max: 5,
+          hint: "Star rating from 1 to 5",
+        }
+      - {
+          name: photo,
+          label: Photo,
+          widget: image,
+          required: false,
+          hint: "Profile photo of the reviewer",
+        }
+      - {
+          name: programRef,
+          label: Related Program,
+          widget: relation,
+          collection: "programs",
+          search_fields: ["title"],
+          value_field: "{{slug}}",
+          display_fields: ["title"],
+          required: false,
+          hint: "Link to a related program",
+        }
+      - {
+          name: date,
+          label: Date,
+          widget: datetime,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          required: false,
+        }
+      - {
+          name: featured,
+          label: Featured,
+          widget: boolean,
+          default: false,
+          hint: "Show on homepage",
+        }
 
   # Team Collection - Manage team members
   - name: team
@@ -140,13 +321,45 @@ collections:
     fields:
       - { name: name, label: Name, widget: string }
       - { name: title, label: Title/Role, widget: string, required: false }
-      - { name: bio, label: Bio, widget: markdown, required: false, hint: "Short biography with formatting support" }
+      - {
+          name: bio,
+          label: Bio,
+          widget: markdown,
+          required: false,
+          hint: "Short biography with formatting support",
+        }
       - { name: photo, label: Photo, widget: image, required: false }
-      - { name: email, label: Email, widget: string, required: false, hint: "Contact email address" }
+      - {
+          name: email,
+          label: Email,
+          widget: string,
+          required: false,
+          hint: "Contact email address",
+        }
       - { name: linkedin, label: LinkedIn URL, widget: string, required: false }
-      - { name: order, label: Display Order, widget: number, required: false, value_type: "int", min: 0, hint: "Lower numbers appear first" }
-      - { name: category, label: Category, widget: select, required: false, options: ["Leadership", "Educator", "Advisor", "Volunteer"] }
-      - { name: active, label: Active, widget: boolean, default: true, hint: "Uncheck to hide from website" }
+      - {
+          name: order,
+          label: Display Order,
+          widget: number,
+          required: false,
+          value_type: "int",
+          min: 0,
+          hint: "Lower numbers appear first",
+        }
+      - {
+          name: category,
+          label: Category,
+          widget: select,
+          required: false,
+          options: ["Leadership", "Educator", "Advisor", "Volunteer"],
+        }
+      - {
+          name: active,
+          label: Active,
+          widget: boolean,
+          default: true,
+          hint: "Uncheck to hide from website",
+        }
 
   # Jobs Collection - Manage career opportunities
   - name: jobs
@@ -166,10 +379,42 @@ collections:
         field: department
     fields:
       - { name: title, label: Job Title, widget: string }
-      - { name: department, label: Department, widget: select, required: false, options: ["Outreach", "Education", "Operations", "Technology", "Marketing", "Legal"] }
-      - { name: location, label: Location, widget: string, required: false, default: "Remote" }
-      - { name: type, label: Employment Type, widget: select, required: false, options: ["Full-time", "Part-time", "Internship", "Contract", "Volunteer"] }
-      - { name: description, label: Description, widget: markdown, required: false }
+      - {
+          name: department,
+          label: Department,
+          widget: select,
+          required: false,
+          options:
+            [
+              "Outreach",
+              "Education",
+              "Operations",
+              "Technology",
+              "Marketing",
+              "Legal",
+            ],
+        }
+      - {
+          name: location,
+          label: Location,
+          widget: string,
+          required: false,
+          default: "Remote",
+        }
+      - {
+          name: type,
+          label: Employment Type,
+          widget: select,
+          required: false,
+          options:
+            ["Full-time", "Part-time", "Internship", "Contract", "Volunteer"],
+        }
+      - {
+          name: description,
+          label: Description,
+          widget: markdown,
+          required: false,
+        }
       - label: Requirements
         name: requirements
         widget: list
@@ -180,11 +425,41 @@ collections:
         widget: list
         required: false
         field: { name: item, label: Responsibility, widget: string }
-      - { name: salaryRange, label: Salary Range, widget: string, required: false, hint: "e.g., $50,000 - $70,000" }
-      - { name: applyEmail, label: Apply via Email, widget: string, required: false }
-      - { name: applyUrl, label: Apply URL, widget: string, required: false, hint: "External application link" }
-      - { name: closingDate, label: Closing Date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, required: false }
-      - { name: status, label: Status, widget: select, default: "open", options: ["draft", "open", "closed", "filled"] }
+      - {
+          name: salaryRange,
+          label: Salary Range,
+          widget: string,
+          required: false,
+          hint: "e.g., $50,000 - $70,000",
+        }
+      - {
+          name: applyEmail,
+          label: Apply via Email,
+          widget: string,
+          required: false,
+        }
+      - {
+          name: applyUrl,
+          label: Apply URL,
+          widget: string,
+          required: false,
+          hint: "External application link",
+        }
+      - {
+          name: closingDate,
+          label: Closing Date,
+          widget: datetime,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          required: false,
+        }
+      - {
+          name: status,
+          label: Status,
+          widget: select,
+          default: "open",
+          options: ["draft", "open", "closed", "filled"],
+        }
 
   # Gallery Collection - Manage media gallery
   - name: gallery
@@ -203,12 +478,41 @@ collections:
     fields:
       - { name: title, label: Title, widget: string }
       - { name: description, label: Description, widget: text, required: false }
-      - { name: image, label: Image, widget: image, hint: "Upload or select an image" }
-      - { name: altText, label: Alt Text, widget: string, hint: "Accessibility description for the image" }
-      - { name: album, label: Album, widget: select, required: false, options: ["events", "workshops", "community", "team", "general"] }
+      - {
+          name: image,
+          label: Image,
+          widget: image,
+          hint: "Upload or select an image",
+        }
+      - {
+          name: altText,
+          label: Alt Text,
+          widget: string,
+          hint: "Accessibility description for the image",
+        }
+      - {
+          name: album,
+          label: Album,
+          widget: select,
+          required: false,
+          options: ["events", "workshops", "community", "team", "general"],
+        }
       - { name: tags, label: Tags, widget: list, required: false }
-      - { name: date, label: Date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, required: false }
-      - { name: attribution, label: Attribution, widget: string, required: false, hint: "Photo credit or source" }
+      - {
+          name: date,
+          label: Date,
+          widget: datetime,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          required: false,
+        }
+      - {
+          name: attribution,
+          label: Attribution,
+          widget: string,
+          required: false,
+          hint: "Photo credit or source",
+        }
 
   # Site Settings - Global site configuration
   - name: settings
@@ -219,6 +523,22 @@ collections:
         name: site
         file: content/settings/site.md
         fields:
-          - { name: siteName, label: Site Name, widget: string, default: "The Collective Counsel" }
-          - { name: heroCopy, label: Hero Tagline, widget: text, required: false, hint: "Main tagline displayed on homepage" }
-          - { name: heroImage, label: Hero Background Image, widget: image, required: false }
+          - {
+              name: siteName,
+              label: Site Name,
+              widget: string,
+              default: "The Collective Counsel",
+            }
+          - {
+              name: heroCopy,
+              label: Hero Tagline,
+              widget: text,
+              required: false,
+              hint: "Main tagline displayed on homepage",
+            }
+          - {
+              name: heroImage,
+              label: Hero Background Image,
+              widget: image,
+              required: false,
+            }
