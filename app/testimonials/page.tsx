@@ -3,6 +3,10 @@ import TestimonialsGrid from "./TestimonialsGrid";
 
 export const metadata = { title: "Testimonials | TCC" };
 
+// Force dynamic rendering to always fetch fresh data from Redis
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function TestimonialsPage() {
   const testimonials = await getTestimonials();
 

@@ -5,6 +5,10 @@ import Image from "next/image";
 
 export const metadata = { title: "Programs | TCC" };
 
+// Force dynamic rendering to always fetch fresh data from Redis
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function ProgramsPage() {
   const programs = await getPrograms();
 
