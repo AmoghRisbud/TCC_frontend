@@ -68,7 +68,7 @@ export default async function ProgramsPage() {
                     </h3>
 
                     {/* Description */}
-                    <p className="text-brand-muted text-sm leading-relaxed line-clamp-2 mb-3">
+                    <p className="text-brand-muted text-sm leading-relaxed line-clamp-3 mb-3 break-words overflow-hidden">
                       {p.shortDescription}
                     </p>
                   </div>

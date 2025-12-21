@@ -37,7 +37,7 @@ export default async function ProgramDetail({ params }: { params: { slug: string
 
           <h1 className="h1 mb-4">{program.title}</h1>
 
-          <p className="text-lg text-white/80 max-w-2xl mx-auto">{program.shortDescription}</p>
+          <p className="text-lg text-white/80 max-w-2xl mx-auto break-words">{program.shortDescription}</p>
 
           {/* Badges */}
           <div className="flex flex-wrap justify-center gap-3 mt-6">
@@ -66,7 +66,7 @@ export default async function ProgramDetail({ params }: { params: { slug: string
           {/* LEFT: Description */}
           <div className="md:col-span-2">
             <h2 className="h2 mb-4">Program Overview</h2>
-            <p className="text-brand-muted leading-relaxed mb-8">
+            <p className="text-brand-muted leading-relaxed mb-8 break-words whitespace-pre-wrap">
               {program.fullDescription || program.shortDescription}
             </p>
           </div>
