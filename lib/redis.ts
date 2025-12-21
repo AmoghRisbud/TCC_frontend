@@ -25,19 +25,24 @@ export function getRedisClient(): Redis {
     const isProd = process.env.NODE_ENV === 'production';
     
     redis = new Redis(redisUrl, {
-      maxRetriesPerRequest: 3,
+      maxRetriesPerRequest: 5,
       retryStrategy(times) {
-        return Math.min(times * 50, 2000);
+        const delay = Math.min(times * 100, 2000);
+        return delay;
       },
-      // Connect immediately in production, lazily in development
-      lazyConnect: !isProd,
+      // Always use lazy connect in serverless
+      lazyConnect: true,
       connectTimeout: 10000,
-      enableReadyCheck: true,
+      enableReadyCheck: false, // Disable for serverless
       // Enable TLS for Upstash (rediss://)
       tls: isUpstash ? {} : undefined,
       family: 4, // Force IPv4 for better compatibility
-      // Keepalive for serverless environments
+      // Increase keepalive for serverless
       keepAlive: 30000,
+      // Don't automatically reconnect in serverless
+      enableOfflineQueue: false,
+      autoResubscribe: false,
+      autoResendUnfulfilledCommands: false,
     });
 
     // Connection event handlers
