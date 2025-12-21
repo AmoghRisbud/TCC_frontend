@@ -19,6 +19,8 @@
     "@types/react-dom": "18.2.7",
     "autoprefixer": "10.4.16",
     "dotenv": "^17.2.3",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "^16.0.10",
     "gray-matter": "4.0.3",
     "ioredis": "^5.8.2",
     "next": "^14.2.35",
@@ -31,8 +33,6 @@
     "typescript": "5.3.3"
   },
   "devDependencies": {
-    "eslint": "^9.0.0",
-    "eslint-config-next": "^16.0.10",
     "prettier": "^3.7.4",
     "remark": "15.0.0",
     "remark-html": "16.0.0"
