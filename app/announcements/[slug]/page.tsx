@@ -16,15 +16,20 @@ async function getAnnouncement(slug: string) {
 }
 
 async function getAllAnnouncements() {
-  const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/announcements`, {
-    cache: 'no-store'
-  });
-  
-  if (!res.ok) {
+  try {
+    const res = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/announcements`, {
+      cache: 'no-store'
+    });
+    
+    if (!res.ok) {
+      return [];
+    }
+    
+    return res.json();
+  } catch (error) {
+    console.warn('Failed to fetch announcements for static generation:', error);
     return [];
   }
-  
-  return res.json();
 }
 
 export async function generateStaticParams() {
