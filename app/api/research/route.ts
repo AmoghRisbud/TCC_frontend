@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getResearch } from '@/lib/content';
 
+// Force dynamic route (required for request.url usage)
+export const dynamic = 'force-dynamic';
+
 // GET all research articles (public endpoint)
 export async function GET(request: NextRequest) {
   try {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
@@ -62,6 +62,14 @@ const contactMethods = [
 ];
 
 export default function ContactPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <ContactPageContent />
+    </Suspense>
+  );
+}
+
+function ContactPageContent() {
   const [showStudentForm, setShowStudentForm] = useState(false);
   const [showOrgForm, setShowOrgForm] = useState(false);
   const searchParams = useSearchParams();
