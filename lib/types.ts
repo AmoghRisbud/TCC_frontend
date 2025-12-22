@@ -12,6 +12,8 @@ export interface Program {
   category?: string;
   startDate?: string;
   endDate?: string;
+  duration?: string;
+  fee?: string;
   location?: string;
   mode?: string;
   ctaLabel?: string;

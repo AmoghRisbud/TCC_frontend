@@ -96,6 +96,16 @@ export default async function ProgramDetail({ params }: { params: { slug: string
                   <strong>End Date:</strong> {program.endDate}
                 </li>
               )}
+              {program.duration && (
+                <li>
+                  <strong>Duration:</strong> {program.duration}
+                </li>
+              )}
+              {program.fee && (
+                <li>
+                  <strong>Fee:</strong> {program.fee}
+                </li>
+              )}
             </ul>
 
             {/* CTA */}
