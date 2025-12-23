@@ -71,6 +71,36 @@ export default function AdminResearchManager() {
         ? { ...formData, slug: generateSlug(formData.title) }
         : formData;
       
+      // Validate PDF URL (if provided) before saving
+      if (dataToSubmit.pdf) {
+        try {
+          let checkUrl = dataToSubmit.pdf;
+          if (checkUrl.startsWith('/')) {
+            // Resolve relative paths to absolute origin
+            checkUrl = window.location.origin + checkUrl;
+          }
+
+          const infoRes = await fetch('/api/admin/pdf-info', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: checkUrl })
+          });
+
+          const info = await infoRes.json();
+
+          if (!infoRes.ok) {
+            // If the pdf-info endpoint refuses the host, ask admin to use Upload PDF
+            throw new Error(info?.error || 'PDF validation failed. Please use Upload PDF to attach a valid PDF.');
+          }
+
+          if (!info.startsWithPdf) {
+            throw new Error('Provided URL does not appear to be a PDF. Please upload a valid PDF using the Upload PDF button.');
+          }
+        } catch (err: any) {
+          throw new Error(err?.message || 'Failed to validate PDF. Please upload using Upload PDF.');
+        }
+      }
+
       const method = modalMode === 'add' ? 'POST' : 'PUT';
       const res = await fetch('/api/admin/research', { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(dataToSubmit) });
       const data = await res.json();
