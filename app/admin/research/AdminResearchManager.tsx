@@ -122,44 +122,7 @@ export default function AdminResearchManager() {
             Add Article
           </button>
 
-          <div className="flex items-center gap-2">
-            <button onClick={async () => {
-              if (!confirm('Dry run: scan and report what would be migrated? This will not upload or change data.')) return;
-              try {
-                setLoading(true);
-                setError(null);
-                const res = await fetch('/api/admin/migrate-pdfs?dry=true', { method: 'POST' });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data?.error || 'Dry-run failed');
-                setSuccess('Dry run completed');
-                console.log('Dry-run report:', data.report);
-                alert(`Dry run completed. Would migrate: ${data.report.would_migrate.length}, Skipped: ${data.report.skipped.length}, Failed: ${data.report.failed.length}`);
-              } catch (e: any) { setError(e.message); } finally { setLoading(false); }
-            }} className="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-all">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3" /></svg>
-              Dry run
-            </button>
 
-            <button onClick={async () => {
-              if (!confirm('Migrate PDFs to Cloudinary? This will re-upload PDF files and update article records.')) return;
-              try {
-                setLoading(true);
-                setError(null);
-                const res = await fetch('/api/admin/migrate-pdfs', { method: 'POST' });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data?.error || 'Migration failed');
-                // show report
-                setSuccess('PDF migration completed');
-                // Attach detailed report to state (show via alert or console for now)
-                console.log('Migration report:', data.report);
-                alert(`Migration completed. Migrated: ${data.report.migrated.length}, Skipped: ${data.report.skipped.length}, Failed: ${data.report.failed.length}`);
-                await refresh();
-              } catch (e: any) { setError(e.message); } finally { setLoading(false); }
-            }} className="inline-flex items-center gap-2 px-4 py-2.5 bg-yellow-50 text-yellow-700 rounded-lg hover:bg-yellow-100 transition-all">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v4a1 1 0 001 1h3m10 0h3a1 1 0 001-1V7M5 3h14a1 1 0 011 1v2H4V4a1 1 0 011-1zM9 21v-4h6v4" /></svg>
-              Migrate PDFs
-            </button>
-          </div>
         </div>
       </div>
 
