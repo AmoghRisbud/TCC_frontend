@@ -72,7 +72,8 @@ export default function AdminResearchManager() {
         : formData;
       
       // Validate PDF URL (if provided) before saving
-      if (dataToSubmit.pdf) {
+      // Note: Skip validation for Cloudinary URLs that were just uploaded, as we trust them
+      if (dataToSubmit.pdf && !dataToSubmit.pdf.includes('res.cloudinary.com/')) {
         try {
           let checkUrl = dataToSubmit.pdf;
           if (checkUrl.startsWith('/')) {
@@ -88,17 +89,26 @@ export default function AdminResearchManager() {
 
           const info = await infoRes.json();
 
+          console.log('PDF Validation Result:', info);
+
           if (!infoRes.ok) {
             // If the pdf-info endpoint refuses the host, ask admin to use Upload PDF
+            console.error('PDF validation endpoint error:', info);
             throw new Error(info?.error || 'PDF validation failed. Please use Upload PDF to attach a valid PDF.');
           }
 
           if (!info.startsWithPdf) {
-            throw new Error('Provided URL does not appear to be a PDF. Please upload a valid PDF using the Upload PDF button.');
+            // Provide more detailed error information
+            const errorDetails = `URL: ${checkUrl}\nContent-Type: ${info.contentType || 'unknown'}\nHTTP Status OK: ${info.ok}`;
+            console.error('PDF validation failed:', errorDetails);
+            throw new Error(`Provided URL does not appear to be a PDF.\n${errorDetails}\n\nPlease use the Upload PDF button to upload a valid PDF file.`);
           }
         } catch (err: any) {
+          console.error('PDF validation error:', err);
           throw new Error(err?.message || 'Failed to validate PDF. Please upload using Upload PDF.');
         }
+      } else if (dataToSubmit.pdf && dataToSubmit.pdf.includes('res.cloudinary.com/')) {
+        console.log('Skipping validation for trusted Cloudinary URL:', dataToSubmit.pdf);
       }
 
       const method = modalMode === 'add' ? 'POST' : 'PUT';
