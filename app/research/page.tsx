@@ -74,8 +74,14 @@ export default function ResearchPage() {
       }
     }
 
-    // If there's a PDF URL, try a lightweight server-side check to see if it's actually a PDF
+    // If there's a PDF URL
     if (pdfUrl) {
+      // If it's a local path (served from this domain), open the proxy path directly
+      if (pdfUrl.startsWith('/')) {
+        window.open(`/research/files/${slug}`, '_blank', 'noopener,noreferrer');
+        return;
+      }
+
       try {
         const check = await fetch('/api/admin/pdf-info', {
           method: 'POST',
@@ -84,18 +90,19 @@ export default function ResearchPage() {
         });
         const info = await check.json();
 
-        // If host disallowed or fetch failed, fallback to opening via Google Docs viewer
+        // If fetch to remote failed or response isn't a PDF, open with Google Docs viewer (absolute URL)
         if (!info.ok || !info.startsWithPdf) {
-          // Open via Google Docs viewer to attempt rendering
-          window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}`, '_blank', 'noopener,noreferrer');
+          const absoluteUrl = pdfUrl.startsWith('http') ? pdfUrl : window.location.origin + pdfUrl;
+          window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(absoluteUrl)}`, '_blank', 'noopener,noreferrer');
           return;
         }
 
-        // Looks fine - open directly
-        window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+        // Looks like a PDF — open via our proxy path so the site URL is consistent
+        window.open(`/research/files/${slug}`, '_blank', 'noopener,noreferrer');
       } catch (err) {
         console.error('PDF check failed, opening directly as fallback:', err);
-        window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+        const absoluteUrl = pdfUrl.startsWith('http') ? pdfUrl : window.location.origin + pdfUrl;
+        window.open(absoluteUrl, '_blank', 'noopener,noreferrer');
       }
     }
   };
@@ -125,10 +132,8 @@ export default function ResearchPage() {
                 className="card-interactive group"
                 onClick={(e) => {
                   e.preventDefault();
-                  // Open the local proxy path which will stream or redirect as needed
-                  Promise.resolve(handleResearchClick(p.slug, e, p.pdf)).finally(() => {
-                    window.open(`/research/files/${p.slug}`, '_blank', 'noopener,noreferrer');
-                  });
+                  // Let the handler perform checks and open the appropriate URL
+                  handleResearchClick(p.slug, e, p.pdf);
                 }}
               >
                 <div className="flex flex-col h-full">
