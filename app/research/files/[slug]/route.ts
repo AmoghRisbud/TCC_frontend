@@ -40,8 +40,15 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
 
     // Remote URL (Google Drive, Cloudinary, etc.)
     try {
-      const res = await fetch(pdf, { method: 'GET' });
+      // Add headers to properly request PDFs from Cloudinary
+      const res = await fetch(pdf, { 
+        method: 'GET',
+        headers: {
+          'Accept': 'application/pdf',
+        }
+      });
       if (!res.ok) {
+        console.error(`Failed to fetch PDF from ${pdf}: ${res.status} ${res.statusText}`);
         return NextResponse.redirect(pdf);
       }
 

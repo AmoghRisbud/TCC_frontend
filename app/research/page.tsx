@@ -88,10 +88,22 @@ export default function ResearchPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ url: pdfUrl })
         });
+        
+        if (!check.ok) {
+          console.warn(`PDF validation failed (${check.status}), opening via proxy anyway`);
+          // Still try to open via proxy even if validation failed
+          window.open(`/research/files/${slug}`, '_blank', 'noopener,noreferrer');
+          return;
+        }
+        
         const info = await check.json();
+        
+        // Log validation results for debugging
+        console.log('PDF validation result:', info);
 
         // If fetch to remote failed or response isn't a PDF, open with Google Docs viewer (absolute URL)
         if (!info.ok || !info.startsWithPdf) {
+          console.warn('PDF validation indicates not a valid PDF, using Google Docs viewer');
           const absoluteUrl = pdfUrl.startsWith('http') ? pdfUrl : window.location.origin + pdfUrl;
           window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(absoluteUrl)}`, '_blank', 'noopener,noreferrer');
           return;
@@ -100,9 +112,9 @@ export default function ResearchPage() {
         // Looks like a PDF — open via our proxy path so the site URL is consistent
         window.open(`/research/files/${slug}`, '_blank', 'noopener,noreferrer');
       } catch (err) {
-        console.error('PDF check failed, opening directly as fallback:', err);
-        const absoluteUrl = pdfUrl.startsWith('http') ? pdfUrl : window.location.origin + pdfUrl;
-        window.open(absoluteUrl, '_blank', 'noopener,noreferrer');
+        console.error('PDF check failed, opening via proxy as fallback:', err);
+        // Fallback to proxy route instead of direct URL to maintain consistent behavior
+        window.open(`/research/files/${slug}`, '_blank', 'noopener,noreferrer');
       }
     }
   };
