@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Configure Cloudinary from env
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,29 +29,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File size must be less than 10MB' }, { status: 400 });
     }
 
-    // Generate unique filename
+    // Convert file to base64
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    
-    const timestamp = Date.now();
-    const originalName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_'); // Sanitize filename
-    const fileName = `${timestamp}-${originalName}`;
-    
-    // Create directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), 'public', 'research');
-    await mkdir(uploadDir, { recursive: true });
-    
-    // Write file
-    const filePath = path.join(uploadDir, fileName);
-    await writeFile(filePath, new Uint8Array(buffer));
-    
-    // Return the public URL
-    const publicUrl = `/research/${fileName}`;
-    
+    const base64Data = `data:${file.type};base64,${buffer.toString('base64')}`;
+
+    // Ensure Cloudinary credentials are present
+    if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+      console.error('Cloudinary environment variables not configured');
+      return NextResponse.json({ error: 'Cloudinary not configured. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET in environment.' }, { status: 500 });
+    }
+
+    // Upload to Cloudinary as raw resource
+    const uploadResult = await cloudinary.uploader.upload(base64Data, {
+      folder: 'tcc/research',
+      resource_type: 'raw',
+      // keep original filename as public_id base (sanitized)
+      public_id: `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`,
+      use_filename: false,
+      unique_filename: true,
+    });
+
+    const publicUrl = uploadResult.secure_url;
+
     return NextResponse.json({ 
       success: true, 
       url: publicUrl,
-      message: 'PDF uploaded successfully'
+      message: 'PDF uploaded successfully to Cloudinary',
+      cloudinary_id: uploadResult.public_id,
     });
     
   } catch (error) {
