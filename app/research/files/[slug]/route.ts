@@ -1,14 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getResearch } from '@/lib/content';
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
 
 export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
   try {
     const slug = params.slug;
     const research = await getResearch();
-    const article = research.find((r) => r.slug === slug);
+    let article = research.find((r) => r.slug === slug);
+
+    // If not found in Redis, fall back to reading the markdown file directly so
+    // existing markdown-only articles continue to work even if Redis has been cleared.
+    if (!article) {
+      try {
+        const mdPath = path.join(process.cwd(), 'content', 'research', `${slug}.md`);
+        if (fs.existsSync(mdPath)) {
+          const raw = fs.readFileSync(mdPath, 'utf8');
+          const parsed = matter(raw);
+          const data = parsed.data as any;
+          if (data && data.pdf) {
+            article = { slug, pdf: data.pdf } as any;
+          }
+        }
+      } catch (e) {
+        console.error('Error reading markdown fallback for research article:', e);
+      }
+    }
+
     if (!article) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-    const pdf = article.pdf;
+    const pdf = (article as any).pdf;
     if (!pdf) return NextResponse.json({ error: 'No PDF for this article' }, { status: 404 });
 
     // Local path (starts with '/') - redirect to public file
@@ -31,7 +53,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
         const headers = new Headers();
         headers.set('Content-Type', 'application/pdf');
         headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=59');
-        headers.set('Content-Disposition', `inline; filename="${article.slug}.pdf"`);
+        headers.set('Content-Disposition', `inline; filename="${slug}.pdf"`);
         return new NextResponse(res.body, { status: 200, headers });
       }
 
@@ -77,7 +99,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       const headers = new Headers();
       headers.set('Content-Type', 'application/pdf');
       headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=59');
-      headers.set('Content-Disposition', `inline; filename="${article.slug}.pdf"`);
+      headers.set('Content-Disposition', `inline; filename="${slug}.pdf"`);
 
       return new NextResponse(stream, { status: 200, headers });
     } catch (err) {
