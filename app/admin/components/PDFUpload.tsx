@@ -6,7 +6,6 @@ interface PDFUploadProps {
   currentPDF?: string;
   onPDFChange: (pdfUrl: string) => void;
   label?: string;
-  onUploadingChange?: (uploading: boolean) => void; // optional callback to notify parent about upload progress
 }
 
 export default function PDFUpload({ 
@@ -47,7 +46,6 @@ export default function PDFUpload({
 
     // Upload file
     setUploading(true);
-    if (onUploadingChange) onUploadingChange(true);
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -70,7 +68,6 @@ export default function PDFUpload({
       setPdfUrl(currentPDF || '');
     } finally {
       setUploading(false);
-      if (onUploadingChange) onUploadingChange(false);
     }
   };
 
