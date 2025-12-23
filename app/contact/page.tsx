@@ -73,6 +73,33 @@ function ContactPageContent() {
   const [showStudentForm, setShowStudentForm] = useState(false);
   const [showOrgForm, setShowOrgForm] = useState(false);
   const searchParams = useSearchParams();
+  
+  // Student form state
+  const [studentFormData, setStudentFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
+  const [studentSubmitting, setStudentSubmitting] = useState(false);
+  const [studentStatus, setStudentStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
+
+  // Organization form state
+  const [orgFormData, setOrgFormData] = useState({
+    organizationName: '',
+    contactPerson: '',
+    email: '',
+    partnershipDetails: '',
+  });
+  const [orgSubmitting, setOrgSubmitting] = useState(false);
+  const [orgStatus, setOrgStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
+
   useEffect(() => {
   const type = searchParams.get("type");
 
@@ -86,6 +113,80 @@ function ContactPageContent() {
     setShowOrgForm(false);
   }
 }, [searchParams]);
+
+  // Handle student form submission
+  const handleStudentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStudentSubmitting(true);
+    setStudentStatus({ type: null, message: '' });
+
+    try {
+      const response = await fetch('/api/contact/student', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(studentFormData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to send message');
+      }
+
+      setStudentStatus({
+        type: 'success',
+        message: 'Your message has been sent successfully! We\'ll get back to you soon.',
+      });
+      
+      // Reset form
+      setStudentFormData({ name: '', email: '', subject: '', message: '' });
+      
+    } catch (error) {
+      setStudentStatus({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Failed to send message. Please try again.',
+      });
+    } finally {
+      setStudentSubmitting(false);
+    }
+  };
+
+  // Handle organization form submission
+  const handleOrgSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setOrgSubmitting(true);
+    setOrgStatus({ type: null, message: '' });
+
+    try {
+      const response = await fetch('/api/contact/organization', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orgFormData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit partnership request');
+      }
+
+      setOrgStatus({
+        type: 'success',
+        message: 'Your partnership request has been submitted successfully! We\'ll review it and get back to you soon.',
+      });
+      
+      // Reset form
+      setOrgFormData({ organizationName: '', contactPerson: '', email: '', partnershipDetails: '' });
+      
+    } catch (error) {
+      setOrgStatus({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Failed to submit request. Please try again.',
+      });
+    } finally {
+      setOrgSubmitting(false);
+    }
+  };
 
   return (
     <div>
@@ -171,46 +272,81 @@ function ContactPageContent() {
                   Send Us a Message
                 </h2>
 
-                <form className="space-y-6">
+                {studentStatus.type && (
+                  <div
+                    className={`mb-6 p-4 rounded-lg ${
+                      studentStatus.type === 'success'
+                        ? 'bg-green-50 text-green-800 border border-green-200'
+                        : 'bg-red-50 text-red-800 border border-red-200'
+                    }`}
+                  >
+                    {studentStatus.message}
+                  </div>
+                )}
+
+                <form className="space-y-6" onSubmit={handleStudentSubmit}>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-brand-dark mb-2">
-                        Name
+                        Name *
                       </label>
-                      <input className="input" placeholder="Your name" />
+                      <input 
+                        className="input" 
+                        placeholder="Your name"
+                        value={studentFormData.name}
+                        onChange={(e) => setStudentFormData({ ...studentFormData, name: e.target.value })}
+                        required
+                      />
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-brand-dark mb-2">
-                        Email
+                        Email *
                       </label>
-                      <input className="input" placeholder="your@email.com" />
+                      <input 
+                        type="email"
+                        className="input" 
+                        placeholder="your@email.com"
+                        value={studentFormData.email}
+                        onChange={(e) => setStudentFormData({ ...studentFormData, email: e.target.value })}
+                        required
+                      />
                     </div>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-brand-dark mb-2">
-                      Subject
+                      Subject *
                     </label>
                     <input
                       className="input"
                       placeholder="What is this regarding?"
+                      value={studentFormData.subject}
+                      onChange={(e) => setStudentFormData({ ...studentFormData, subject: e.target.value })}
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-brand-dark mb-2">
-                      Message
+                      Message *
                     </label>
                     <textarea
                       className="input resize-none"
                       rows={5}
                       placeholder="Your message..."
+                      value={studentFormData.message}
+                      onChange={(e) => setStudentFormData({ ...studentFormData, message: e.target.value })}
+                      required
                     />
                   </div>
 
                   <div className="text-center">
-                    <button type="submit" className="btn">
-                      Send Message
+                    <button 
+                      type="submit" 
+                      className="btn"
+                      disabled={studentSubmitting}
+                    >
+                      {studentSubmitting ? 'Sending...' : 'Send Message'}
                     </button>
                   </div>
                 </form>
@@ -223,44 +359,82 @@ function ContactPageContent() {
       Partner With Us
     </h2>
 
-    <form className="space-y-6">
+    {orgStatus.type && (
+      <div
+        className={`mb-6 p-4 rounded-lg ${
+          orgStatus.type === 'success'
+            ? 'bg-green-50 text-green-800 border border-green-200'
+            : 'bg-red-50 text-red-800 border border-red-200'
+        }`}
+      >
+        {orgStatus.message}
+      </div>
+    )}
+
+    <form className="space-y-6" onSubmit={handleOrgSubmit}>
       <div>
         <label className="block text-sm font-medium text-brand-dark mb-2">
-          Organization Name
+          Organization Name *
         </label>
-        <input className="input" placeholder="Your organization name" />
+        <input 
+          className="input" 
+          placeholder="Your organization name"
+          value={orgFormData.organizationName}
+          onChange={(e) => setOrgFormData({ ...orgFormData, organizationName: e.target.value })}
+          required
+        />
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-brand-dark mb-2">
-            Contact Person
+            Contact Person *
           </label>
-          <input className="input" placeholder="Full name" />
+          <input 
+            className="input" 
+            placeholder="Full name"
+            value={orgFormData.contactPerson}
+            onChange={(e) => setOrgFormData({ ...orgFormData, contactPerson: e.target.value })}
+            required
+          />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-brand-dark mb-2">
-            Email
+            Email *
           </label>
-          <input className="input" placeholder="contact@email.com" />
+          <input 
+            type="email"
+            className="input" 
+            placeholder="contact@email.com"
+            value={orgFormData.email}
+            onChange={(e) => setOrgFormData({ ...orgFormData, email: e.target.value })}
+            required
+          />
         </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-brand-dark mb-2">
-          Partnership Details
+          Partnership Details *
         </label>
         <textarea
           className="input resize-none"
           rows={5}
           placeholder="Tell us how you'd like to collaborate..."
+          value={orgFormData.partnershipDetails}
+          onChange={(e) => setOrgFormData({ ...orgFormData, partnershipDetails: e.target.value })}
+          required
         />
       </div>
 
       <div className="text-center">
-        <button type="submit" className="btn">
-          Submit Partnership Request
+        <button 
+          type="submit" 
+          className="btn"
+          disabled={orgSubmitting}
+        >
+          {orgSubmitting ? 'Submitting...' : 'Submit Partnership Request'}
         </button>
       </div>
     </form>

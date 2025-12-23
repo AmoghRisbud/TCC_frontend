@@ -1,6 +1,7 @@
-import Link from 'next/link';
+'use client';
 
-export const metadata = { title: 'Community | TCC' };
+import Link from 'next/link';
+import { useState } from 'react';
 
 const channels = [
   {
@@ -73,6 +74,81 @@ const channels = [
 ];
 
 export default function CommunityPage() {
+  const [showFellowshipForm, setShowFellowshipForm] = useState(false);
+  
+  // Fellowship form state
+  const [fellowshipFormData, setFellowshipFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    institution: '',
+    yearOfStudy: '',
+    areaOfInterest: '',
+    motivation: '',
+    experience: '',
+    portfolio: '',
+  });
+  const [fellowshipSubmitting, setFellowshipSubmitting] = useState(false);
+  const [fellowshipStatus, setFellowshipStatus] = useState<{
+    type: 'success' | 'error' | null;
+    message: string;
+  }>({ type: null, message: '' });
+
+  // Handle fellowship form submission
+  const handleFellowshipSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFellowshipSubmitting(true);
+    setFellowshipStatus({ type: null, message: '' });
+
+    try {
+      const response = await fetch('/api/contact/fellowship', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(fellowshipFormData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to submit application');
+      }
+
+      setFellowshipStatus({
+        type: 'success',
+        message: 'Your application has been submitted successfully! We\'ll review it and get back to you soon.',
+      });
+      
+      // Reset form
+      setFellowshipFormData({
+        name: '',
+        email: '',
+        phone: '',
+        institution: '',
+        yearOfStudy: '',
+        areaOfInterest: '',
+        motivation: '',
+        experience: '',
+        portfolio: '',
+      });
+      
+      // Scroll to top of form to show success message
+      setTimeout(() => {
+        const formSection = document.querySelector('.animate-fade-in');
+        if (formSection) {
+          formSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      
+    } catch (error) {
+      setFellowshipStatus({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Failed to submit application. Please try again.',
+      });
+    } finally {
+      setFellowshipSubmitting(false);
+    }
+  };
+
   return (
     <div>
       {/* Hero Section */}
@@ -257,19 +333,207 @@ export default function CommunityPage() {
                   View Details →
                 </a>
 
-                <a
-                  href="https://docs.google.com/forms/d/ZZZZ"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => setShowFellowshipForm(true)}
                   className="btn-cta w-full"
                 >
                   Apply Now
-                </a>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Legal Content Fellowship Application Form */}
+      {showFellowshipForm && (
+        <section className="section bg-brand-light">
+          <div className="container">
+            <div className="card max-w-2xl mx-auto animate-fade-in">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="h3 text-brand-dark">
+                  Legal Content Fellowship Application
+                </h2>
+                <button
+                  onClick={() => {
+                    setShowFellowshipForm(false);
+                    setFellowshipStatus({ type: null, message: '' });
+                  }}
+                  className="text-brand-muted hover:text-brand-dark transition"
+                  aria-label="Close form"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {fellowshipStatus.type && (
+                <div
+                  className={`mb-6 p-4 rounded-lg ${
+                    fellowshipStatus.type === 'success'
+                      ? 'bg-green-50 text-green-800 border border-green-200'
+                      : 'bg-red-50 text-red-800 border border-red-200'
+                  }`}
+                >
+                  {fellowshipStatus.message}
+                </div>
+              )}
+
+              <form className="space-y-6" onSubmit={handleFellowshipSubmit}>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-brand-dark mb-2">
+                      Full Name *
+                    </label>
+                    <input 
+                      className="input" 
+                      placeholder="Your full name"
+                      value={fellowshipFormData.name}
+                      onChange={(e) => setFellowshipFormData({ ...fellowshipFormData, name: e.target.value })}
+                      required 
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-brand-dark mb-2">
+                      Email *
+                    </label>
+                    <input 
+                      type="email"
+                      className="input" 
+                      placeholder="your@email.com"
+                      value={fellowshipFormData.email}
+                      onChange={(e) => setFellowshipFormData({ ...fellowshipFormData, email: e.target.value })}
+                      required 
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-brand-dark mb-2">
+                      Phone Number
+                    </label>
+                    <input 
+                      type="tel"
+                      className="input" 
+                      placeholder="+91 1234567890"
+                      value={fellowshipFormData.phone}
+                      onChange={(e) => setFellowshipFormData({ ...fellowshipFormData, phone: e.target.value })}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-brand-dark mb-2">
+                      Institution/College *
+                    </label>
+                    <input 
+                      className="input" 
+                      placeholder="Your institution name"
+                      value={fellowshipFormData.institution}
+                      onChange={(e) => setFellowshipFormData({ ...fellowshipFormData, institution: e.target.value })}
+                      required 
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-brand-dark mb-2">
+                      Year of Study
+                    </label>
+                    <select 
+                      className="input"
+                      value={fellowshipFormData.yearOfStudy}
+                      onChange={(e) => setFellowshipFormData({ ...fellowshipFormData, yearOfStudy: e.target.value })}
+                    >
+                      <option value="">Select year</option>
+                      <option value="1st Year">1st Year</option>
+                      <option value="2nd Year">2nd Year</option>
+                      <option value="3rd Year">3rd Year</option>
+                      <option value="4th Year">4th Year</option>
+                      <option value="5th Year">5th Year</option>
+                      <option value="Graduate">Graduate</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-brand-dark mb-2">
+                      Area of Interest
+                    </label>
+                    <input 
+                      className="input" 
+                      placeholder="e.g., Corporate Law, Criminal Law"
+                      value={fellowshipFormData.areaOfInterest}
+                      onChange={(e) => setFellowshipFormData({ ...fellowshipFormData, areaOfInterest: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-brand-dark mb-2">
+                    Why do you want to join the Legal Content Fellowship? *
+                  </label>
+                  <textarea
+                    className="input resize-none"
+                    rows={5}
+                    placeholder="Tell us about your motivation and what you hope to achieve..."
+                    value={fellowshipFormData.motivation}
+                    onChange={(e) => setFellowshipFormData({ ...fellowshipFormData, motivation: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-brand-dark mb-2">
+                    Previous writing or research experience (if any)
+                  </label>
+                  <textarea
+                    className="input resize-none"
+                    rows={4}
+                    placeholder="Share any relevant experience with legal writing, research, or publications..."
+                    value={fellowshipFormData.experience}
+                    onChange={(e) => setFellowshipFormData({ ...fellowshipFormData, experience: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-brand-dark mb-2">
+                    Portfolio/Work Samples (Optional)
+                  </label>
+                  <input 
+                    className="input" 
+                    placeholder="Link to your portfolio, LinkedIn, or work samples"
+                    value={fellowshipFormData.portfolio}
+                    onChange={(e) => setFellowshipFormData({ ...fellowshipFormData, portfolio: e.target.value })}
+                  />
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                  <button 
+                    type="button"
+                    onClick={() => {
+                      setShowFellowshipForm(false);
+                      setFellowshipStatus({ type: null, message: '' });
+                    }}
+                    className="btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="btn"
+                    disabled={fellowshipSubmitting}
+                  >
+                    {fellowshipSubmitting ? 'Submitting...' : 'Submit Application'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Benefits */}
       <section className="section bg-white">
