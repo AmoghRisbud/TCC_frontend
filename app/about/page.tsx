@@ -97,15 +97,15 @@ const peopleGroups = [
         image: "/images/counsel/Varsha.JPG",
       },
       {
-        name: "Shubham Vengurlekar",
+        name: "Mr. Shubham Vengurlekar",
         designation: "Co-Founder , Tech",
         image: "/images/counsel/ShubhamV.JPG",
       },
       {
-        name: "Hitansha",
+        name: "Ms. Hitansha",
         designation: "Operations & Strategy Lead",
         image:
-          "/images/counsel/Hitansha- Operations & Strategy Lead at the Founder’s Office.jpg",
+          "/images/counsel/Hitansha_new.jpg",
       },
       {
         name: "Ms. Gurleen",
@@ -118,13 +118,13 @@ const peopleGroups = [
         image: "/images/counsel/Adv. Kanchan_User Success Manager.jpg",
       },
       {
-        name: "Adv. Chhotoo Kumar",
+        name: "Mr. Chhotoo Kumar",
         designation: "Course Production Coordinator",
         image:
           "/images/counsel/Chhotoo Kumar _Course Production Coordinator .jpg",
       },
       {
-        name: "Kaustav Das Sharma",
+        name: "Mr. Kaustav Das Sharma",
         designation: "Research Director",
         image: "/images/counsel/Kaustav Das Sharma (Research Director).jpg",
       },
@@ -155,7 +155,7 @@ const peopleGroups = [
         image: "/images/counsel/Adv. Dhruv Ashish.jpg",
       },
       {
-        name: "Palak agarwal",
+        name: "Ms. Palak agarwal",
         designation: "Intern, Founder’s Office",
         image: "/images/counsel/Palak Agarwal.jpg",
       },
@@ -171,7 +171,7 @@ const peopleGroups = [
       },
       {
         name: "Prof. Nidhi Kulkarni",
-        designation: "Professor, PES University",
+        designation: "Asst. Prof., PES University",
         image: "/images/counsel/Nidhi.jpeg",
       },
       {
