@@ -23,14 +23,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Ensure Vercel API token is configured
-    if (!process.env.VERCEL_TOKEN) {
-      console.error('VERCEL_TOKEN is not configured');
-      return NextResponse.json({ error: 'Vercel not configured. Please set VERCEL_TOKEN in environment.' }, { status: 500 });
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      console.error('BLOB_READ_WRITE_TOKEN is not configured');
+      return NextResponse.json({ error: 'Vercel not configured. Please set BLOB_READ_WRITE_TOKEN in environment.' }, { status: 500 });
     }
 
     // Step 1: Request an upload slot from Vercel Blob API
     const createHeaders: Record<string,string> = {
-      'Authorization': `Bearer ${process.env.VERCEL_TOKEN}`,
+      'Authorization': `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
       'Content-Type': 'application/json'
     };
     if (process.env.VERCEL_TEAM_ID) {
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
 
       // Provide actionable hint for 403 errors
       if (createRes.status === 403) {
-        let hint = 'Verify that VERCEL_TOKEN is a personal token with the correct permissions and belongs to the same account/team as your project.';
+        let hint = 'Verify that BLOB_READ_WRITE_TOKEN is a personal token with the correct permissions and belongs to the same account/team as your project.';
         if (!process.env.VERCEL_TEAM_ID && bodyJson && bodyJson.error && bodyJson.error.message && bodyJson.error.message.toLowerCase().includes('store id')) {
           hint += ' If your project is under a Team, set VERCEL_TEAM_ID env var to the team id.';
         }
