@@ -76,6 +76,24 @@ Check the migration response for success and the number of items migrated:
 }
 ```
 
+## Migrate Research PDFs to Cloudinary
+
+A new admin API exists to migrate existing research PDFs to Cloudinary as raw resources and update `pdf` fields on research articles.
+
+- Endpoint: `POST /api/admin/migrate-pdfs`
+- What it does: Scans all research articles in Redis, fetches each article `pdf` URL, validates it's a PDF, re-uploads it to Cloudinary (`resource_type: 'raw'`), and updates the article record with the `secure_url` returned by Cloudinary. The endpoint returns a report with lists of `migrated`, `skipped`, and `failed` items.
+
+Example usage (run after setting Cloudinary env vars):
+
+```bash
+curl -X POST http://localhost:3000/api/admin/migrate-pdfs
+```
+
+Notes:
+- Ensure `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` and `CLOUDINARY_API_SECRET` are set in your `.env.local` before running migration.
+- Items that are already hosted on Cloudinary are skipped.
+- Items that cannot be fetched or that are not valid PDFs are reported in `failed` for manual review.
+
 ## Using the Admin System
 
 ### API Endpoints

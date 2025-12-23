@@ -26,36 +26,60 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
 
       const contentType = res.headers.get('content-type') || '';
 
-      // If content-type indicates PDF, stream it
-      if (contentType.includes('application/pdf')) {
+      // If content-type indicates PDF, stream it directly
+      if (contentType.toLowerCase().includes('pdf')) {
         const headers = new Headers();
         headers.set('Content-Type', 'application/pdf');
         headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=59');
-        // Inline display
         headers.set('Content-Disposition', `inline; filename="${article.slug}.pdf"`);
         return new NextResponse(res.body, { status: 200, headers });
       }
 
-      // Otherwise, try a lightweight probe of the first bytes to check for "%PDF"
+      // Otherwise, probe the first bytes to check for PDF magic number '%PDF'
       const reader = res.body?.getReader();
-      if (reader) {
-        const { value } = await reader.read();
-        if (value && value.length >= 4) {
-          const header = Buffer.from(value).slice(0, 4).toString('utf8');
-          if (header === '%PDF') {
-            const headers = new Headers();
-            headers.set('Content-Type', 'application/pdf');
-            headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=59');
-            headers.set('Content-Disposition', `inline; filename="${article.slug}.pdf"`);
-            // Create a new stream which sends the bytes we already read, then the rest
-            const { readable, writable } = new (require('stream').Readable)().wrap(res.body as any) as any; // fallback if needed
-            return new NextResponse(res.body, { status: 200, headers });
-          }
-        }
+      if (!reader) {
+        return NextResponse.redirect(pdf);
       }
 
-      // Fallback: redirect to original URL (e.g., Google Drive link that requires special viewer)
-      return NextResponse.redirect(pdf);
+      const first = await reader.read();
+      const firstChunk = first.value;
+      if (!firstChunk || firstChunk.length < 4) {
+        return NextResponse.redirect(pdf);
+      }
+
+      const header = Buffer.from(firstChunk.slice(0, 4)).toString('utf8');
+      if (header !== '%PDF') {
+        return NextResponse.redirect(pdf);
+      }
+
+      // It's a PDF — create a ReadableStream that first enqueues the chunk we already read,
+      // then continues streaming the remaining bytes from the original reader.
+      const stream = new ReadableStream({
+        async start(controller) {
+          controller.enqueue(firstChunk);
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              if (value) controller.enqueue(value);
+            }
+          } catch (err) {
+            console.error('Error while streaming remote PDF:', err);
+          } finally {
+            controller.close();
+          }
+        },
+        cancel(reason) {
+          try { reader.cancel?.(); } catch (e) { /* noop */ }
+        }
+      });
+
+      const headers = new Headers();
+      headers.set('Content-Type', 'application/pdf');
+      headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=59');
+      headers.set('Content-Disposition', `inline; filename="${article.slug}.pdf"`);
+
+      return new NextResponse(stream, { status: 200, headers });
     } catch (err) {
       console.error('Error proxying PDF:', err);
       return NextResponse.redirect(pdf);
