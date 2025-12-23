@@ -42,6 +42,8 @@ export default function AdminResearchManager() {
   const [formData, setFormData] = React.useState<Research>(emptyResearch);
   const [deleteConfirm, setDeleteConfirm] = React.useState<string | null>(null);
   const [viewItem, setViewItem] = React.useState<Research | null>(null);
+  // Track PDF upload progress to prevent saving while an upload is in progress
+  const [pdfUploading, setPdfUploading] = React.useState(false);
 
   const refresh = React.useCallback(async () => {
     try {
@@ -74,27 +76,41 @@ export default function AdminResearchManager() {
       // Validate PDF URL (if provided) before saving
       if (dataToSubmit.pdf) {
         try {
+          // Prevent save while upload is in progress
+          if (pdfUploading) throw new Error('PDF upload in progress. Please wait until the upload finishes before creating the article.');
+
           let checkUrl = dataToSubmit.pdf;
           if (checkUrl.startsWith('/')) {
             // Resolve relative paths to absolute origin
             checkUrl = window.location.origin + checkUrl;
           }
 
-          const infoRes = await fetch('/api/admin/pdf-info', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: checkUrl })
-          });
+          // If the URL is a Cloudinary URL, trust it to avoid race conditions where Cloudinary makes the file available slightly later
+          try {
+            const parsed = new URL(checkUrl);
+            if (parsed.host.includes('res.cloudinary.com')) {
+              // Skip remote validation for Cloudinary-hosted PDFs
+            } else {
+              const infoRes = await fetch('/api/admin/pdf-info', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: checkUrl })
+              });
 
-          const info = await infoRes.json();
+              const info = await infoRes.json();
 
-          if (!infoRes.ok) {
-            // If the pdf-info endpoint refuses the host, ask admin to use Upload PDF
-            throw new Error(info?.error || 'PDF validation failed. Please use Upload PDF to attach a valid PDF.');
-          }
+              if (!infoRes.ok) {
+                // If the pdf-info endpoint refuses the host, ask admin to use Upload PDF
+                throw new Error(info?.error || 'PDF validation failed. Please use Upload PDF to attach a valid PDF.');
+              }
 
-          if (!info.startsWithPdf) {
-            throw new Error('Provided URL does not appear to be a PDF. Please upload a valid PDF using the Upload PDF button.');
+              if (!info.startsWithPdf) {
+                throw new Error('Provided URL does not appear to be a PDF. Please upload a valid PDF using the Upload PDF button.');
+              }
+            }
+          } catch (errInner) {
+            // If URL parsing fails or pdf-info fails, surface a friendly message
+            throw new Error((errInner as Error).message || 'Failed to validate PDF. Please upload using Upload PDF.');
           }
         } catch (err: any) {
           throw new Error(err?.message || 'Failed to validate PDF. Please upload using Upload PDF.');
@@ -254,13 +270,14 @@ export default function AdminResearchManager() {
                   <PDFUpload
                     currentPDF={formData.pdf}
                     onPDFChange={(url) => setFormData(p => ({ ...p, pdf: url }))}
+                    onUploadingChange={(u) => setPdfUploading(u)}
                     label="Research PDF Document"
                   />
                 </div>
 
                 <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                   <button type="button" onClick={closeModal} className="px-6 py-2.5 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
-                  <button type="submit" disabled={loading} className="px-6 py-2.5 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors disabled:opacity-50">{loading ? 'Saving...' : modalMode === 'add' ? 'Create Article' : 'Save Changes'}</button>
+                  <button type="submit" disabled={loading || pdfUploading} className="px-6 py-2.5 bg-brand-primary text-white rounded-lg hover:bg-brand-primary/90 transition-colors disabled:opacity-50">{pdfUploading ? 'Uploading PDF...' : (loading ? 'Saving...' : modalMode === 'add' ? 'Create Article' : 'Save Changes')}</button>
                 </div>
               </form>
             </div>
