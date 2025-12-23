@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
     const putRes = await fetch(uploadUrl, {
       method: 'PUT',
       headers: { 'Content-Type': file.type },
-      body: Buffer.from(bytes)
+      body: bytes
     });
 
     if (!putRes.ok) {

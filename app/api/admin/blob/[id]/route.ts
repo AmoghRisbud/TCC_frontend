@@ -5,16 +5,16 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const id = params.id;
     if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
 
-    if (!process.env.VERCEL_TOKEN) {
-      console.error('VERCEL_TOKEN not configured');
-      return NextResponse.json({ error: 'Vercel not configured' }, { status: 500 });
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      console.error('BLOB_READ_WRITE_TOKEN not configured');
+      return NextResponse.json({ error: 'Vercel Blob not configured' }, { status: 500 });
     }
 
     const apiBase = 'https://api.vercel.com/v1/blob';
     const blobUrl = `${apiBase}/${encodeURIComponent(id)}`;
 
     // Try fetching the blob info
-    const infoRes = await fetch(blobUrl, { headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` } });
+    const infoRes = await fetch(blobUrl, { headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` } });
 
     // If Vercel returns JSON with a public URL, redirect there
     const ct = infoRes.headers.get('content-type') || '';
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     ];
 
     for (const u of downloadUrls) {
-      const res = await fetch(u, { headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` } });
+      const res = await fetch(u, { headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` } });
       if (!res.ok) continue;
 
       // If it's a redirect, follow by redirecting the client
