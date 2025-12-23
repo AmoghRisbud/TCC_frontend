@@ -46,10 +46,10 @@ export default function ResearchPage() {
   }, []);
 
   // Function to handle research click and track view (unique users only)
-  const handleResearchClick = async (slug: string, e: React.MouseEvent) => {
+  const handleResearchClick = async (slug: string, e: React.MouseEvent, pdfUrl?: string) => {
     // Check if user has already viewed this article
     const viewedArticles = JSON.parse(localStorage.getItem('viewedResearch') || '[]');
-    
+
     // Only track if user hasn't viewed this article before
     if (!viewedArticles.includes(slug)) {
       try {
@@ -58,11 +58,11 @@ export default function ResearchPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ slug })
         });
-        
+
         // Mark this article as viewed
         viewedArticles.push(slug);
         localStorage.setItem('viewedResearch', JSON.stringify(viewedArticles));
-        
+
         // Update the local state to show the new count immediately
         setResearch(prev => prev.map(item => 
           item.slug === slug 
@@ -71,6 +71,31 @@ export default function ResearchPage() {
         ));
       } catch (error) {
         console.error('Error tracking view:', error);
+      }
+    }
+
+    // If there's a PDF URL, try a lightweight server-side check to see if it's actually a PDF
+    if (pdfUrl) {
+      try {
+        const check = await fetch('/api/admin/pdf-info', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url: pdfUrl })
+        });
+        const info = await check.json();
+
+        // If host disallowed or fetch failed, fallback to opening via Google Docs viewer
+        if (!info.ok || !info.startsWithPdf) {
+          // Open via Google Docs viewer to attempt rendering
+          window.open(`https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}`, '_blank', 'noopener,noreferrer');
+          return;
+        }
+
+        // Looks fine - open directly
+        window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+      } catch (err) {
+        console.error('PDF check failed, opening directly as fallback:', err);
+        window.open(pdfUrl, '_blank', 'noopener,noreferrer');
       }
     }
   };
@@ -96,18 +121,14 @@ export default function ResearchPage() {
             {research.map((p) => (
               <Link
                 key={p.slug}
-                href={p.pdf || `/research/${p.slug}`}
-                {...(p.pdf && { target: "_blank", rel: "noopener noreferrer" })}
+                href={`/research/files/${p.slug}`}
                 className="card-interactive group"
                 onClick={(e) => {
-                  if (p.pdf) {
-                    e.preventDefault();
-                    Promise.resolve(handleResearchClick(p.slug, e)).finally(() => {
-                      window.open(p.pdf!, '_blank', 'noopener,noreferrer');
-                    });
-                  } else {
-                    handleResearchClick(p.slug, e);
-                  }
+                  e.preventDefault();
+                  // Open the local proxy path which will stream or redirect as needed
+                  Promise.resolve(handleResearchClick(p.slug, e, p.pdf)).finally(() => {
+                    window.open(`/research/files/${p.slug}`, '_blank', 'noopener,noreferrer');
+                  });
                 }}
               >
                 <div className="flex flex-col h-full">
