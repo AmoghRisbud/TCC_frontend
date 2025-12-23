@@ -29,12 +29,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Step 1: Request an upload slot from Vercel Blob API
+    const createHeaders: Record<string,string> = {
+      'Authorization': `Bearer ${process.env.VERCEL_TOKEN}`,
+      'Content-Type': 'application/json'
+    };
+    if (process.env.VERCEL_TEAM_ID) {
+      createHeaders['x-vercel-team-id'] = process.env.VERCEL_TEAM_ID;
+    }
+    if (process.env.VERCEL_ORG_ID) {
+      createHeaders['x-vercel-organization-id'] = process.env.VERCEL_ORG_ID;
+    }
+
     const createRes = await fetch('https://api.vercel.com/v1/blob', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${process.env.VERCEL_TOKEN}`,
-        'Content-Type': 'application/json'
-      },
+      headers: createHeaders,
       body: JSON.stringify({
         name: file.name,
         size: file.size,
@@ -43,9 +51,22 @@ export async function POST(request: NextRequest) {
     });
 
     if (!createRes.ok) {
-      const body = await createRes.text();
-      console.error('Failed to create Vercel blob:', createRes.status, body);
-      return NextResponse.json({ error: 'Failed to create upload slot on Vercel' }, { status: 500 });
+      let bodyText = await createRes.text().catch(() => '');
+      let bodyJson: any = null;
+      try { bodyJson = JSON.parse(bodyText); } catch (e) { /* not JSON */ }
+
+      console.error('Failed to create Vercel blob:', createRes.status, bodyText || bodyJson);
+
+      // Provide actionable hint for 403 errors
+      if (createRes.status === 403) {
+        let hint = 'Verify that VERCEL_TOKEN is a personal token with the correct permissions and belongs to the same account/team as your project.';
+        if (!process.env.VERCEL_TEAM_ID && bodyJson && bodyJson.error && bodyJson.error.message && bodyJson.error.message.toLowerCase().includes('store id')) {
+          hint += ' If your project is under a Team, set VERCEL_TEAM_ID env var to the team id.';
+        }
+        return NextResponse.json({ error: 'Failed to create upload slot on Vercel', details: bodyJson || bodyText, hint }, { status: 500 });
+      }
+
+      return NextResponse.json({ error: 'Failed to create upload slot on Vercel', details: bodyJson || bodyText }, { status: 500 });
     }
 
     const createJson = await createRes.json();
@@ -54,7 +75,7 @@ export async function POST(request: NextRequest) {
 
     if (!id || !uploadUrl) {
       console.error('Unexpected response from Vercel blob creation:', createJson);
-      return NextResponse.json({ error: 'Unexpected Vercel response' }, { status: 500 });
+      return NextResponse.json({ error: 'Unexpected Vercel response', details: createJson }, { status: 500 });
     }
 
     // Step 2: Upload the raw bytes to the uploadUrl
