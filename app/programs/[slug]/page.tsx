@@ -20,61 +20,61 @@ export default async function ProgramDetail({
   return (
     <div>
       {/* ================= HERO ================= */}
-      <section className="section bg-brand-hero text-white">
-        <div className="container max-w-4xl text-center">
+<section className="bg-brand-hero text-white py-20">
+  <div className="container max-w-4xl text-center">
 
-          {/* LARGE IMAGE ABOVE TITLE */}
-          {program.logo && (
-            <div className="mx-auto mb-10 max-w-3xl">
-              <Image
-                src={program.logo}
-                alt={program.title}
-                width={1400}
-                height={500}
-                priority
-                className="
-                  w-full
-                  h-[260px] md:h-[340px]
-                  object-contain
-                  rounded-2xl
-                  bg-white
-                  p-6
-                  shadow-xl
-                "
-              />
-            </div>
-          )}
+    {/* PROGRAM IMAGE */}
+    {program.logo && (
+  <div className="mx-auto mb-8 max-w-3xl flex justify-center">
+    <Image
+      src={program.logo}
+      alt={program.title}
+      width={800}
+      height={400}
+      priority
+      className="
+        w-auto
+        max-h-[140px] md:max-h-[180px]
+        object-contain
+        rounded-lg
+      "
+    />
+  </div>
+)}
 
-          {/* TITLE */}
-          <h1 className="h1 mb-4">{program.title}</h1>
 
-          {/* DESCRIPTION */}
-          {program.shortDescription && (
-            <p className="text-lg text-white/85 max-w-2xl mx-auto break-words mb-6">
-              {program.shortDescription}
-            </p>
-          )}
+    {/* TITLE */}
+    <h1 className="h1 mb-4">{program.title}</h1>
 
-          {/* BADGES */}
-          <div className="flex flex-wrap justify-center gap-3 mt-6">
-            {program.featured && (
-              <span className="px-3 py-1 text-xs font-semibold rounded-full bg-brand-accent text-white">
-                Featured
-              </span>
-            )}
-            {program.status && (
-              <span className="px-3 py-1 text-xs font-semibold rounded-full bg-white/20">
-                {program.status.toUpperCase()}
-              </span>
-            )}
-            {program.category && (
-              <span className="px-3 py-1 text-xs rounded-full border border-white/30">
-                {program.category}
-              </span>
-            )}
-          </div>
-        </div>
-      </section>
+    {/* DESCRIPTION */}
+    {program.shortDescription && (
+      <p className="text-lg text-white/85 max-w-2xl mx-auto mb-6">
+        {program.shortDescription}
+      </p>
+    )}
+
+    {/* BADGES */}
+    <div className="flex flex-wrap justify-center gap-3">
+      {program.featured && (
+        <span className="px-3 py-1 text-xs font-semibold rounded-full bg-brand-accent text-white">
+          Featured
+        </span>
+      )}
+      {program.status && (
+        <span className="px-3 py-1 text-xs font-semibold rounded-full bg-white/20">
+          {program.status.toUpperCase()}
+        </span>
+      )}
+      {program.category && (
+        <span className="px-3 py-1 text-xs rounded-full border border-white/30">
+          {program.category}
+        </span>
+      )}
+    </div>
+
+  </div>
+</section>
+
 
       {/* ================= CONTENT ================= */}
       <section className="section bg-brand-light">
