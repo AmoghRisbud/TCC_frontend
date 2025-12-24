@@ -3,43 +3,59 @@ import Link from 'next/link';
 import { getPrograms } from '../../../lib/content';
 import { notFound } from 'next/navigation';
 
-// Force dynamic rendering to always fetch fresh data from Redis
+// Force dynamic rendering to always fetch fresh data
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const dynamicParams = true;
 
-export default async function ProgramDetail({ params }: { params: { slug: string } }) {
+export default async function ProgramDetail({
+  params,
+}: {
+  params: { slug: string };
+}) {
   const programs = await getPrograms();
   const program = programs.find((p) => p.slug === params.slug);
   if (!program) return notFound();
 
   return (
     <div>
-      {/* HERO */}
+      {/* ================= HERO ================= */}
       <section className="section bg-brand-hero text-white">
         <div className="container max-w-4xl text-center">
+
+          {/* LARGE IMAGE ABOVE TITLE */}
           {program.logo && (
-            <div className="mx-auto mb-6 w-20 h-20 rounded-xl bg-white flex items-center justify-center shadow">
+            <div className="mx-auto mb-10 max-w-3xl">
               <Image
                 src={program.logo}
-                alt={`${program.title} logo`}
-                width={64}
-                height={64}
-                className="object-contain"
+                alt={program.title}
+                width={1400}
+                height={500}
                 priority
+                className="
+                  w-full
+                  h-[260px] md:h-[340px]
+                  object-contain
+                  rounded-2xl
+                  bg-white
+                  p-6
+                  shadow-xl
+                "
               />
             </div>
           )}
 
+          {/* TITLE */}
           <h1 className="h1 mb-4">{program.title}</h1>
 
+          {/* DESCRIPTION */}
           {program.shortDescription && (
-            <p className="text-lg text-white/80 max-w-2xl mx-auto break-words mb-6">
+            <p className="text-lg text-white/85 max-w-2xl mx-auto break-words mb-6">
               {program.shortDescription}
             </p>
           )}
 
-          {/* Badges */}
+          {/* BADGES */}
           <div className="flex flex-wrap justify-center gap-3 mt-6">
             {program.featured && (
               <span className="px-3 py-1 text-xs font-semibold rounded-full bg-brand-accent text-white">
@@ -60,23 +76,26 @@ export default async function ProgramDetail({ params }: { params: { slug: string
         </div>
       </section>
 
-      {/* CONTENT */}
+      {/* ================= CONTENT ================= */}
       <section className="section bg-brand-light">
         <div className="container max-w-4xl grid md:grid-cols-3 gap-10">
-          {/* LEFT: Description */}
+
+          {/* LEFT */}
           <div className="md:col-span-2">
             {program.fullDescription && (
               <>
                 <h2 className="h2 mb-4">Program Overview</h2>
-                <div 
+                <div
                   className="text-brand-muted leading-relaxed mb-8 prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: program.fullDescription }}
+                  dangerouslySetInnerHTML={{
+                    __html: program.fullDescription,
+                  }}
                 />
               </>
             )}
           </div>
 
-          {/* RIGHT: Program Meta */}
+          {/* RIGHT */}
           <aside className="bg-white rounded-2xl p-6 shadow-sm border h-fit">
             <h3 className="font-semibold mb-4">Program Details</h3>
 
@@ -113,7 +132,6 @@ export default async function ProgramDetail({ params }: { params: { slug: string
               )}
             </ul>
 
-            {/* CTA */}
             {(program.enrollmentFormUrl || program.ctaUrl) && (
               <a
                 href={program.enrollmentFormUrl || program.ctaUrl}
@@ -123,7 +141,9 @@ export default async function ProgramDetail({ params }: { params: { slug: string
                            px-5 py-3 rounded-lg bg-brand-primary text-white
                            font-semibold hover:bg-brand-accent transition"
               >
-                {program.enrollmentFormUrl ? 'Enroll' : (program.ctaLabel || 'Apply Now')}
+                {program.enrollmentFormUrl
+                  ? 'Enroll'
+                  : program.ctaLabel || 'Apply Now'}
               </a>
             )}
           </aside>

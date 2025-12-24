@@ -105,7 +105,7 @@ const peopleGroups = [
         name: "Ms. Hitansha",
         designation: "Operations & Strategy Lead",
         image:
-          "/images/counsel/Hitansha_new.jpg",
+          "/images/counsel/Hitansha_new.jpeg",
       },
       {
         name: "Ms. Gurleen",
