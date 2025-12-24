@@ -29,6 +29,7 @@ interface Program {
   duration?: string;
   logo?: string;
   featured?: boolean;
+  seatsLeft?: number;
 }
 
 const emptyProgram: Program = {
@@ -45,6 +46,7 @@ const emptyProgram: Program = {
   duration: '',
   logo: '',
   featured: false,
+  seatsLeft: undefined,
 };
 
 export default function AdminProgramsManager() {
@@ -329,6 +331,17 @@ export default function AdminProgramsManager() {
                 <div>
                   <label className="block text-sm font-medium text-brand-dark mb-1">Fee</label>
                   <input type="text" value={formData.fee} onChange={e => setFormData(p => ({ ...p, fee: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="e.g., ₹50,000" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-brand-dark mb-1">Seats Left</label>
+                  <input 
+                    type="number" 
+                    min="0"
+                    value={formData.seatsLeft ?? ''} 
+                    onChange={e => setFormData(p => ({ ...p, seatsLeft: e.target.value ? parseInt(e.target.value) : undefined }))} 
+                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" 
+                    placeholder="e.g., 25" 
+                  />
                 </div>
 
                 <div className="flex items-center gap-2 col-span-2">

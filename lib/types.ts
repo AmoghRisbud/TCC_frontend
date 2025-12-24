@@ -24,6 +24,7 @@ export interface Program {
   featured?: boolean;
   status?: string;
   sessions?: ProgramSession[];
+  seatsLeft?: number;
 }
 export interface ProjectMetric {
   label: string;

@@ -59,10 +59,23 @@ export default async function ProgramsPage() {
 
                   {/* Content */}
                   <div className="flex flex-col flex-1 p-6 pt-0">
-                    {/* Title */}
-                    <h3 className="h3 mb-2 group-hover:text-brand-primary transition-colors">
-                      {p.title}
-                    </h3>
+                    {/* Title and Seats Badge */}
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <h3 className="h3 group-hover:text-brand-primary transition-colors flex-1">
+                        {p.title}
+                      </h3>
+                      {p.seatsLeft !== undefined && p.seatsLeft !== null && (
+                        <span className={`flex-shrink-0 px-2 py-1 text-xs font-semibold rounded-full ${
+                          p.seatsLeft <= 5 
+                            ? 'bg-red-100 text-red-700' 
+                            : p.seatsLeft <= 10 
+                            ? 'bg-orange-100 text-orange-700' 
+                            : 'bg-green-100 text-green-700'
+                        }`}>
+                          {p.seatsLeft} seats left
+                        </span>
+                      )}
+                    </div>
 
                     {/* Description */}
                     <p className="text-brand-muted text-sm leading-relaxed line-clamp-3 mb-6 break-words overflow-hidden flex-1">

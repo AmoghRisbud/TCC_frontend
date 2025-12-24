@@ -131,6 +131,14 @@ export default async function ProgramDetail({
                   <strong>Fee:</strong> {program.fee}
                 </li>
               )}
+              {program.seatsLeft !== undefined && program.seatsLeft !== null && (
+                <li>
+                  <strong>Seats Left:</strong> 
+                  <span className={`ml-1 ${program.seatsLeft <= 5 ? 'text-red-600 font-semibold' : program.seatsLeft <= 10 ? 'text-orange-600' : 'text-green-600'}`}>
+                    {program.seatsLeft}
+                  </span>
+                </li>
+              )}
             </ul>
 
             {(program.enrollmentFormUrl || program.ctaUrl) && (
