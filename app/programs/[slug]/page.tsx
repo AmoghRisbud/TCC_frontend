@@ -25,21 +25,22 @@ export default async function ProgramDetail({
 
     {/* PROGRAM IMAGE */}
     {program.logo && (
-  <div className="mx-auto mb-8 max-w-3xl flex justify-center">
-    <Image
-      src={program.logo}
-      alt={program.title}
-      width={800}
-      height={400}
-      priority
-      className="
-        w-auto
-        max-h-[140px] md:max-h-[180px]
-        object-contain
-        rounded-lg
-      "
-    />
-  </div>
+<div className="mx-auto mb-8 max-w-4xl flex justify-center">
+  <Image
+    src={program.logo}
+    alt={program.title}
+    width={1200}
+    height={400}
+    priority
+    className="
+      w-full
+      max-h-[160px] md:max-h-[180px]
+      object-contain
+      rounded-lg
+    "
+  />
+</div>
+
 )}
 
 
