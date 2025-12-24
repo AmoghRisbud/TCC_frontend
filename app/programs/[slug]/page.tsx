@@ -36,7 +36,7 @@ export default async function ProgramDetail({
       w-full
       max-h-[150px] md:max-h-[170px]
       object-contain
-      rounded-lg
+      
     "
   />
 </div>

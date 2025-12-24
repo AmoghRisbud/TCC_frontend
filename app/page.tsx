@@ -176,7 +176,7 @@ export default async function HomePage() {
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
             {[
-              { value: "500+", label: "Students Mentored" },
+              { value: "700+", label: "Students Mentored" },
               { value: "50+", label: "Expert Educators" },
               { value: "20+", label: "Programs Delivered" },
               { value: "10+", label: "Partner Institutions" },
