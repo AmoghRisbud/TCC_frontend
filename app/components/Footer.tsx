@@ -1,4 +1,9 @@
+'use client';
+
+import { useState } from 'react';
 import Link from "next/link";
+import LegalModal from "./LegalModal";
+import { privacyPolicyContent, termsContent } from "@/content/legalContent";
 
 const quickLinks = [
   { href: "/", label: "Home" },
@@ -46,6 +51,9 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  type ModalType = 'privacy' | 'terms' | null;
+
+const [modalType, setModalType] = useState<ModalType>(null);
   return (
     <footer
       className="relative mt-20 overflow-hidden
@@ -151,20 +159,36 @@ export default function Footer() {
           </p>
 
           <div className="flex gap-6 text-sm text-gray-400">
-            <Link
-              href="/about"
-              className="text-gray-400 hover:text-brand-secondary"
-            >
-              Privacy Policy
-            </Link>
-            <Link
-              href="/about"
-              className="text-gray-400 hover:text-brand-secondary"
-            >
-              Terms of Service
-            </Link>
+            <button
+    onClick={() => setModalType('privacy')}
+    className="hover:text-brand-secondary"
+  >
+    Privacy Policy
+  </button>
+            <button
+    onClick={() => setModalType('terms')}
+    className="hover:text-brand-secondary"
+  >
+    Terms of Service
+  </button>
           </div>
         </div>
+        {modalType === 'privacy' && (
+  <LegalModal
+    title="Privacy Policy"
+    content={privacyPolicyContent}
+    onClose={() => setModalType(null)}
+  />
+)}
+
+{modalType === 'terms' && (
+  <LegalModal
+    title="Terms of Service"
+    content={termsContent}
+    onClose={() => setModalType(null)}
+  />
+)}
+
       </div>
     </footer>
   );
