@@ -28,11 +28,6 @@ interface Testimonial {
   image?: string;
 }
 
-interface Program {
-  slug: string;
-  title: string;
-}
-
 const emptyTestimonial: Testimonial = {
   id: '',
   name: '',
@@ -48,7 +43,6 @@ const emptyTestimonial: Testimonial = {
 
 export default function AdminTestimonialsManager() {
   const [items, setItems] = React.useState<Testimonial[]>([]);
-  const [programs, setPrograms] = React.useState<Program[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState<string | null>(null);
@@ -70,22 +64,6 @@ export default function AdminTestimonialsManager() {
   }, []);
 
   React.useEffect(() => { refresh(); }, [refresh]);
-
-  // Fetch programs for dropdown
-  React.useEffect(() => {
-    const fetchPrograms = async () => {
-      try {
-        const res = await fetch('/api/admin/programs');
-        if (res.ok) {
-          const data = await res.json();
-          setPrograms(Array.isArray(data) ? data : []);
-        }
-      } catch (e) {
-        console.error('Failed to fetch programs:', e);
-      }
-    };
-    fetchPrograms();
-  }, []);
 
   const openAddModal = () => { setFormData(emptyTestimonial); setModalMode('add'); setIsModalOpen(true); };
   const openEditModal = (item: Testimonial) => { setFormData(item); setModalMode('edit'); setIsModalOpen(true); };
@@ -262,18 +240,7 @@ export default function AdminTestimonialsManager() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-brand-dark mb-1">Program Reference</label>
-                  <select 
-                    value={formData.programRef} 
-                    onChange={e => setFormData(p => ({ ...p, programRef: e.target.value }))} 
-                    className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
-                  >
-                    <option value="">None</option>
-                    {programs.map(program => (
-                      <option key={program.slug} value={program.slug}>
-                        {program.title}
-                      </option>
-                    ))}
-                  </select>
+                  <input type="text" value={formData.programRef} onChange={e => setFormData(p => ({ ...p, programRef: e.target.value }))} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary" placeholder="program-slug" />
                 </div>
                 <div className="flex items-center gap-2">
                   <input type="checkbox" id="featured" checked={formData.featured} onChange={e => setFormData(p => ({ ...p, featured: e.target.checked }))} className="w-4 h-4 rounded border-gray-300 text-brand-primary focus:ring-brand-primary" />

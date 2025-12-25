@@ -1,6 +1,5 @@
 import SectionHeading from '../components/SectionHeading';
 import Link from 'next/link';
-import MigrationButton from './MigrationButton';
 
 export const metadata = { title: 'Admin | TCC' };
 
@@ -227,23 +226,11 @@ export default function AdminPage() {
                   key={feature.title}
                   className="card text-center group hover:shadow-lg transition-shadow duration-300"
                   aria-label={`${feature.title} - ${feature.description}`}
-                >
-                  {content}
+                >                  {content}
                 </article>
               );
             })}
           </div>
-        </div>
-      </section>
-
-      {/* Migration Section */}
-      <section className="section bg-white">
-        <div className="container">
-          <SectionHeading 
-            title="System Utilities" 
-            subtitle="Manage system-wide operations and data migration."
-          />
-          <MigrationButton />
         </div>
       </section>
 
