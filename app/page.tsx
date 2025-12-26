@@ -20,13 +20,13 @@ export default async function HomePage() {
   const allTestimonials = await getTestimonials();
   const gallery = await getGallery();
 
-  // Show only featured testimonials if any exist, otherwise show first 3
+  // Show only featured testimonials if any exist, otherwise show first 10
   const featuredTestimonials = allTestimonials.filter(t => 
     t.featured === true || (t.featured as any) === 'true'
   );
   const testimonials = featuredTestimonials.length > 0 
-    ? featuredTestimonials.slice(0, 3)
-    : allTestimonials.slice(0, 3);
+    ? featuredTestimonials.slice(0, 10)
+    : allTestimonials.slice(0, 10);
 
   // Helper to strip HTML and collapse whitespace (server-side safe)
   const stripHtml = (html?: string) => {
