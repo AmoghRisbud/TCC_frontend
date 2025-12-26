@@ -84,6 +84,7 @@ export default function AdminCareersManager() {
     setFormData(emptyJob); 
     setOriginalSlug('');
     setDateError(null);
+    setError(null);
   };
 
   const validateClosingDate = (closingDate: string) => {
@@ -115,7 +116,8 @@ export default function AdminCareersManager() {
       // Process array inputs
       const processedData = {
         ...formData,
-        slug: modalMode === 'add' ? generateSlug(formData.title) : formData.slug,
+        // Use manual slug if provided, otherwise generate from title
+        slug: formData.slug.trim() || generateSlug(formData.title),
         requirements: requirementsInput.split('\n').filter(line => line.trim() !== ''),
         responsibilities: responsibilitiesInput.split('\n').filter(line => line.trim() !== '')
       };
@@ -253,6 +255,12 @@ export default function AdminCareersManager() {
               <button onClick={closeModal} className="text-gray-400 hover:text-gray-600">✕</button>
             </div>
             <div className="overflow-y-auto flex-1">
+              {error && (
+                <div className="m-6 mb-0 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 flex items-center justify-between">
+                  <span>{error}</span>
+                  <button type="button" onClick={() => setError(null)} className="text-red-500 hover:text-red-700">✕</button>
+                </div>
+              )}
               <form onSubmit={handleSubmit} className="p-6 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -266,16 +274,22 @@ export default function AdminCareersManager() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Position ID *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Position ID {modalMode === 'edit' ? '*' : '(optional)'}
+                    </label>
                     <input
                       type="text"
-                      required
+                      required={modalMode === 'edit'}
                       value={formData.slug}
                       onChange={e => setFormData({ ...formData, slug: e.target.value })}
                       className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary"
-                      placeholder="e.g., senior-legal-associate"
+                      placeholder="e.g., 101 or senior-legal-associate"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Unique identifier for this position</p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {modalMode === 'add' 
+                        ? 'Leave empty to auto-generate from job title, or enter custom ID (supports numbers)'
+                        : 'Unique identifier for this position'}
+                    </p>
                   </div>
                 </div>
 
