@@ -130,7 +130,7 @@ const peopleGroups = [
       },
       {
         name: "Ms. Nishtha Sofat",
-        designation: "Community & Growth manager",
+        designation: "Community Growth manager",
         image: "/images/counsel/Nishtha.JPEG",
       },
       {
@@ -140,7 +140,7 @@ const peopleGroups = [
           "/images/counsel/Ankit Kuril (Growth and Partnership Manager).jpg",
       },
       {
-        name: "Ms. Ashritha Allparthi",
+        name: "Ms. Ashritha Alaparthi",
         designation: "Learning experience designer",
         image: "/images/counsel/Ashritha.JPEG",
       },
@@ -192,7 +192,7 @@ const peopleGroups = [
       {
         name: "Adv. Tushar Khairnar",
         designation: "Advocate on Record, Supreme Court of India",
-        image: "/images/counsel/Tushar.jpeg",
+        image: "/images/counsel/Tushar_UpdatedPhoto.JPG",
       },
       {
         name: "Adv. Richa Bharadwaj",
