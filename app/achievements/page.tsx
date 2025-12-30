@@ -14,8 +14,17 @@ export default async function AchievementsPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="section bg-brand-hero text-white">
-        <div className="container text-center max-w-3xl mx-auto">
+      <section className="relative section bg-brand-hero text-white overflow-hidden">
+        <div className="absolute inset-0 opacity-20">
+          <Image
+            src="/Achievements_Collab.JPG"
+            alt="TCC Achievements Collaboration"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+        <div className="container text-center max-w-3xl mx-auto relative z-10">
           <h1 className="h1 mb-4">Our Achievements</h1>
           <p className="text-lg text-white/85 leading-relaxed mx-auto">
             Celebrating milestones, awards, and recognition that mark our journey in legal education and community impact.
