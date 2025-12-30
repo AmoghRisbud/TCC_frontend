@@ -49,12 +49,12 @@ export default async function AchievementsPage() {
                   key={achievement.id}
                   className="bg-gradient-to-br from-brand-primary/5 to-brand-accent/5 rounded-xl p-6 border-2 border-brand-primary/20 hover:shadow-lg transition-shadow"
                 >
-                  <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden">
+                  <div className="relative w-full h-48 mb-4 rounded-lg overflow-hidden bg-white">
                     <Image
                       src={achievement.image}
                       alt={achievement.title}
                       fill
-                      className="object-cover"
+                      className="object-contain p-4"
                     />
                   </div>
                   <div className="flex items-center gap-2 mb-2">
@@ -124,12 +124,12 @@ export default async function AchievementsPage() {
                   key={achievement.id}
                   className="bg-white rounded-xl p-5 border border-gray-200 hover:shadow-md transition-shadow"
                 >
-                  <div className="relative w-full h-40 mb-4 rounded-lg overflow-hidden">
+                  <div className="relative w-full h-40 mb-4 rounded-lg overflow-hidden bg-gray-50">
                     <Image
                       src={achievement.image}
                       alt={achievement.title}
                       fill
-                      className="object-cover"
+                      className="object-contain p-3"
                     />
                   </div>
                   <h3 className="text-lg font-semibold text-brand-dark mb-2">{achievement.title}</h3>
