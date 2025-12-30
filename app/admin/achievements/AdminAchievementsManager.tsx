@@ -39,7 +39,7 @@ const emptyAchievement: Achievement = {
   slug: '',
   title: '',
   description: '',
-  image: '/images/achievements/sample.jpeg',
+  image: '',
   date: new Date().toISOString().split('T')[0],
   category: '',
   featured: false,
@@ -298,13 +298,11 @@ export default function AdminAchievementsManager() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image URL *
-                </label>
                 <ImageUpload
                   currentImage={formData.image}
                   category="achievements"
                   onImageChange={(imageUrl: string) => setFormData({ ...formData, image: imageUrl })}
+                  label="Achievement Image *"
                 />
               </div>
 
