@@ -14,16 +14,16 @@ export default async function AchievementsPage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative section bg-brand-hero text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <Image
-            src="/Achievements_Collab.JPG"
-            alt="TCC Achievements Collaboration"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
+      <section 
+        className="relative section bg-brand-hero text-white overflow-hidden"
+        style={{
+          backgroundImage: 'url(/images/achievements-collab.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundBlendMode: 'overlay',
+        }}
+      >
+        <div className="absolute inset-0 bg-brand-primary/80"></div>
         <div className="container text-center max-w-3xl mx-auto relative z-10">
           <h1 className="h1 mb-4">Our Achievements</h1>
           <p className="text-lg text-white/85 leading-relaxed mx-auto">
