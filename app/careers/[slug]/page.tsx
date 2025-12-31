@@ -14,7 +14,44 @@ export default async function JobDetail({ params }: { params: { slug: string } }
   return (
     <div className="section container max-w-3xl">
       <h1 className="h1 mb-4">{job.title}</h1>
+      
+      {/* Job metadata badges */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {job.location && (
+          <span className="badge">{job.location}</span>
+        )}
+        {job.type && (
+          <span className="badge">{job.type}</span>
+        )}
+        {job.department && (
+          <span className="badge">{job.department}</span>
+        )}
+      </div>
+
       <p className="mb-6">{job.description}</p>
+
+      {/* Job details */}
+      <div className="mb-8 p-4 bg-gray-50 rounded-lg space-y-2 text-sm">
+        {job.salaryRange && (
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-gray-700">Salary Range:</span>
+            <span className="text-gray-600">{job.salaryRange}</span>
+          </div>
+        )}
+        {job.closingDate && (
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-gray-700">Closing Date:</span>
+            <span className="text-gray-600">{new Date(job.closingDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          </div>
+        )}
+        {job.applyEmail && (
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-gray-700">Contact:</span>
+            <a href={`mailto:${job.applyEmail}`} className="text-brand-primary hover:underline">{job.applyEmail}</a>
+          </div>
+        )}
+      </div>
+
       <div className="mt-8 space-y-4">
         {job.requirements && (
           <div>
