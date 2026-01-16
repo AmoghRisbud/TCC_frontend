@@ -146,9 +146,40 @@ const [modalType, setModalType] = useState<ModalType>(null);
           </div>
         </div>
 
+        {/* Developer Branding */}
+        <div className="mt-12 pt-8 border-t border-white/10">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 text-center">
+            <div className="flex items-center gap-3">
+              <img 
+                src="/images/CodeDarshLogo.jpg" 
+                alt="CodeDarshi Tech Logo" 
+                className="h-16 w-16 rounded-full object-cover"
+              />
+              <p className="text-[14px] text-gray-300">
+                Designed and Developed by <span className="font-semibold text-brand-secondary">CodeDarshi Tech</span>
+              </p>
+            </div>
+            <div className="flex flex-col md:flex-row gap-2 md:gap-4 text-[13px] text-gray-400">
+              <a 
+                href="mailto:codedarshi05@gmail.com"
+                className="hover:text-brand-secondary transition-colors"
+              >
+                codedarshi05@gmail.com
+              </a>
+              <span className="hidden md:inline">|</span>
+              <a 
+                href="tel:+918552029673"
+                className="hover:text-brand-secondary transition-colors"
+              >
+                +91 8552029673
+              </a>
+            </div>
+          </div>
+        </div>
+
         {/* Bottom Bar */}
         <div
-          className="mt-14 pt-8 border-t border-white/10
+          className="mt-8 pt-8 border-t border-white/10
                         flex flex-col md:flex-row
                         justify-between items-center gap-4"
         >
